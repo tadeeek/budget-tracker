@@ -33,33 +33,33 @@ public class ExpenseController {
         this.expenseRepository = expenseRepository;
     }
 
-    @GetMapping("/categories")
+    @GetMapping("/expenses")
     public List<Expense> categories() {
         return expenseRepository.findAll();
     }
 
-    @GetMapping("/expense/{id}")
+    @GetMapping("/expenses/{id}")
     public ResponseEntity<?> getexpense(@PathVariable Long id) {
         Optional<Expense> expense = expenseRepository.findById(id);
         return expense.map(res -> ResponseEntity.ok().body(res)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PostMapping("/expense")
+    @PostMapping("/expenses")
     public ResponseEntity<Expense> addexpense(@Valid @RequestBody Expense expense) throws URISyntaxException {
         Expense result = expenseRepository.save(expense);
 
-        return ResponseEntity.created(new URI("/api/expense" + result.getId())).body(result);
+        return ResponseEntity.created(new URI("/api/expenses" + result.getId())).body(result);
 
     }
 
-    @PutMapping("/expense/{id}")
+    @PutMapping("/expenses/{id}")
     public ResponseEntity<Expense> updateexpense(@Valid @RequestBody Expense expense) {
         Expense result = expenseRepository.save(expense);
 
         return ResponseEntity.ok().body(result);
     }
 
-    @DeleteMapping("/expense/{id}")
+    @DeleteMapping("/expenses/{id}")
     public ResponseEntity<?> deleteexpense(@PathVariable Long id) {
         expenseRepository.deleteById(id);
 
