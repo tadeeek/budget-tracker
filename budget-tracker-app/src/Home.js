@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import NavApp from "./NavApp";
 
 class Home extends Component {
     state = {  }

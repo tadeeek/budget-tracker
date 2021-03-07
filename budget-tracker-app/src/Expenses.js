@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import AppNav from './NavApp'
+
 
 class Expenses extends Component {
     state = {  }
@@ -7,6 +7,7 @@ class Expenses extends Component {
         return ( 
         <React.Fragment>             
             <h2>Expenses</h2>
+
         </React.Fragment>  
         );
     }

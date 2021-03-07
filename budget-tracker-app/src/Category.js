@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import AppNav from './NavApp'
 class Category extends Component {
     state = {  
         isLoading: true,
