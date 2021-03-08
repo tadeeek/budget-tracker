@@ -10,6 +10,7 @@ class Expenses extends Component {
         date: new Date(),
         isLoading: true,
         expenses: [],
+        categories: []
     }
 
     handleChange
@@ -20,9 +21,24 @@ class Expenses extends Component {
         this.setState({expenses:body, isLoading: false});
     }
 
+    async componentDidMount(){
+        const response = await fetch('/api/categories')
+        const body = await response.json();
+        this.setState({categories:body, isLoading: false});
+    }
+
     render() { 
         const title = <h2>Add Expense</h2>;
+        const {expenses,categories, isLoading} = this.state;
 
+
+        if( isLoading){
+            return(
+                <React.Fragment>
+                    <h2>Loading...</h2>
+                </React.Fragment>
+            )
+        }
         return ( 
         <React.Fragment>             
             {title}
@@ -34,6 +50,10 @@ class Expenses extends Component {
 
                 <FormGroup>
                     <Label for="category">Category</Label>
+                    {
+                    categories.map(category => <div id={category.id}>{category.name}</div>)
+
+                    }
                     <Input type="text" name="category" id="category" onChange={this.handleChange}/>
                 </FormGroup>
 
