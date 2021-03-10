@@ -1,47 +1,107 @@
-import React, { Component, useState }  from 'react';
+import React, { Component, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { Link } from 'react-router-dom';
-import { Form, FormGroup, Button, Input, Label } from 'reactstrap';
-
+import { Link } from "react-router-dom";
 
 class Expenses extends Component {
-    state = {  
-        date: new Date(),
-        isLoading: true,
-        expenses: [],
-        categories: []
+  state = {
+    date: new Date(),
+    isLoading: true,
+    expenses: [],
+    categories: [],
+  };
+
+  handleChange;
+
+  async componentDidMount() {
+    const response = await fetch("/api/expenses");
+    const body = await response.json();
+    this.setState({ expenses: body, isLoading: false });
+  }
+
+  async componentDidMount() {
+    const response = await fetch("/api/categories");
+    const body = await response.json();
+    this.setState({ categories: body, isLoading: false });
+  }
+
+  render() {
+    const title = <h2>Add Expense</h2>;
+    const { expenses, categories, isLoading } = this.state;
+
+    if (isLoading) {
+      return (
+        <React.Fragment>
+          <h2>Loading...</h2>
+        </React.Fragment>
+      );
     }
+    return (
+      <React.Fragment>
+        {title}
 
-    handleChange
-
-    async componentDidMount(){
-        const response = await fetch('/api/expenses')
-        const body = await response.json();
-        this.setState({expenses:body, isLoading: false});
-    }
-
-    async componentDidMount(){
-        const response = await fetch('/api/categories')
-        const body = await response.json();
-        this.setState({categories:body, isLoading: false});
-    }
-
-    render() { 
-        const title = <h2>Add Expense</h2>;
-        const {expenses,categories, isLoading} = this.state;
-
-
-        if( isLoading){
-            return(
-                <React.Fragment>
-                    <h2>Loading...</h2>
-                </React.Fragment>
-            )
-        }
-        return ( 
-        <React.Fragment>             
-            {title}
+        <form onSubmit={this.handleSubmit}>
+          <div class="mb-3">
+            <label for="title" class="form-label">
+              Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              id="title"
+              class="form-control"
+              onChange={this.handleChange}
+            />
+          </div>
+          <div class="mb-3">
+            <label for="title" class="form-label">
+              Category
+            </label>
+            <input
+              type="text"
+              name="title"
+              id="title"
+              class="form-control"
+              onChange={this.handleChange}
+            />
+          </div>
+          <div class="mb-3">
+            <label for="expensedate" class="form-label">
+              Date
+            </label>
+            <DatePicker
+              selected={this.state.date}
+              onChange={this.handleChange}
+              class="form-control"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="location" class="form-label">
+              Location
+            </label>
+            <input
+              type="text"
+              name="location"
+              id="location"
+              class="form-control"
+              onChange={this.handleChange}
+            />
+          </div>
+          <div class="mb-3">
+            <button type="submit" class="btn btn-primary">
+              Submit
+            </button>{" "}
+            <button
+              type="submit"
+              class="btn btn-secondary"
+              tag={Link}
+              to="/categories"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+        {/*}
             <Form onSumit={this.handleSubmit}>
                 <FormGroup>
                     <Label for="title">Title</Label>
@@ -73,10 +133,10 @@ class Expenses extends Component {
 
                 </FormGroup> 
             </Form>
-
-        </React.Fragment>  
-        );
-    }
+                */}
+      </React.Fragment>
+    );
+  }
 }
- 
+
 export default Expenses;
