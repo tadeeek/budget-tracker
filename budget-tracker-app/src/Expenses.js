@@ -1,52 +1,82 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import DatePicker from "react-datepicker";
+import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
-import { Link } from "react-router-dom";
 
 class Expenses extends Component {
+  emptyItem = {
+    id: "",
+    expensedate: new Date(),
+    description: "",
+    location: "",
+    category: {
+      id: 4,
+      name: "Other",
+    },
+  };
+
   constructor(props) {
     super(props);
 
     this.state = {
-      date: new Date(),
       isLoading: true,
       expenses: [],
       categories: [],
-      post: this.postData,
+      date: new Date(),
+      post: this.emptyItem,
     };
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleChangeCat = this.handleChangeCat.bind(this);
+    this.handleDateChange = this.handleDateChange.bind(this);
   }
 
-  handleChange;
-
-  // {
-  //   "id": 100,
-  //   "expenseDate": "2019-06-16T17:00:00Z",
-  //   "description": "Visiting Rome",
-  //   "location": "Las Vegas",
-  //   "category": {
-  //       "id": 1,
-  //       "name": "Transport"
-  //   }
-  // }
-
-  postData = {
-    id: "101",
-    expenseDate: new Date(),
-    description: "Dinner",
-    location: "Las Vegas",
-    category: [1, "Travel"],
-  };
-
-  async componentDidMount() {
-    const responseCat = await fetch("/api/categories");
-    const bodyCat = await responseCat.json();
-    this.setState({ categories: bodyCat, isLoading: false });
+  async handleSubmit(event) {
+    const post = this.state.post;
+    await fetch("/api/expenses", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(post),
+    });
+    event.preventDefault();
+    this.props.history.push("/expenses");
   }
 
-  async componentDidMount() {
-    const responseExp = await fetch("/api/expenses");
-    const bodyExp = await responseExp.json();
-    this.setState({ expenses: bodyExp, isLoading: false });
+  handleChange(event) {
+    const target = event.target; /* select */
+    const value = target.value; /* liczba */
+    const name = target.name; /* category */
+    console.log(name);
+    let post = { ...this.state.post };
+
+    console.log("huj");
+    post[name] = value;
+    this.setState({ post });
+    console.log(this.state.post);
+  }
+
+  handleChangeCat(event) {
+    const target = event.target; /* select */
+    const value = target.value; /* liczba */
+    const name = target.name; /* category */
+    console.log(name);
+    let post = { ...this.state.post };
+
+    console.log("huj");
+    post.category.id = value;
+    this.setState({ post });
+    console.log(this.state.post);
+  }
+
+  handleDateChange(date) {
+    let post = { ...this.state.post };
+    post.expensedate = date;
+    this.setState({ post });
+    console.log(this.state.post);
   }
 
   async remove(id) {
@@ -64,21 +94,43 @@ class Expenses extends Component {
     });
   }
 
+  async componentDidMount() {
+    const responseCat = await fetch("/api/categories");
+    const bodyCat = await responseCat.json();
+    this.setState({ categories: bodyCat, isLoading: false });
+
+    const responseExp = await fetch("/api/expenses");
+    const bodyExp = await responseExp.json();
+    this.setState({ expenses: bodyExp, isLoading: false });
+  }
+
   render() {
     const title = <h2>Add Expense</h2>;
     const { categories } = this.state;
     const { expenses, isLoading } = this.state;
 
+    if (isLoading) {
+      return (
+        <React.Fragment>
+          <h2>Loading...</h2>
+        </React.Fragment>
+      );
+    }
+
     let categoriesList = categories.map((cat) => (
-      <option value={cat.id}>{cat.name}</option>
+      <option value={cat.id} key={cat.id}>
+        {cat.name}
+      </option>
     ));
 
     let expensesList = expenses.map((exp) => (
-      <tr value={exp.id}>
+      <tr key={exp.id}>
         <td>{exp.id}</td>
         <td>{exp.description}</td>
         <td>{exp.location}</td>
-        <td>{exp.expenseDate}</td>
+        <td>
+          <Moment date={exp.expenseDate} format="YYYY/MM/DD" />
+        </td>
         <td>{exp.category.name}</td>
         <td>
           <button
@@ -92,53 +144,48 @@ class Expenses extends Component {
       </tr>
     ));
 
-    if (isLoading) {
-      return (
-        <React.Fragment>
-          <h2>Loading...</h2>
-        </React.Fragment>
-      );
-    }
     return (
       <React.Fragment>
         {title}
         <form onSubmit={this.handleSubmit}>
           <div className="mb-3">
-            <label for="title" className="form-label">
+            <label htmlFor="description" className="form-label">
               Title
             </label>
             <input
               type="text"
-              name="title"
-              id="title"
+              name="description"
+              id="description"
               className="form-control"
               onChange={this.handleChange}
             />
           </div>
           <div className="mb-3">
-            <label for="title" className="form-label">
+            <label htmlFor="category" className="form-label">
               Category
             </label>
             <select
-              class="form-select"
+              className="form-select"
               aria-label="Default select example"
-              onChange={this.handleChange}
+              id="category"
+              name="category"
+              onChange={this.handleChangeCat}
             >
               {categoriesList}
             </select>
           </div>
           <div className="mb-3">
-            <label for="expensedate" className="form-label">
+            <label htmlFor="expensedate" className="form-label">
               Date
             </label>
             <DatePicker
-              selected={this.state.date}
-              onChange={this.handleChange}
+              selected={this.state.post.expensedate}
+              onChange={this.handleDateChange}
               className="form-control"
             />
           </div>
           <div className="mb-3">
-            <label for="location" className="form-label">
+            <label htmlFor="location" className="form-label">
               Location
             </label>
             <input
@@ -150,15 +197,8 @@ class Expenses extends Component {
             />
           </div>
           <div className="mb-3">
-            <button type="submit" className="btn btn-primary">
-              Submit
-            </button>{" "}
-            <button
-              type="submit"
-              class="btn btn-secondary"
-              tag={Link}
-              to="/categories"
-            >
+            <button className="btn btn-primary">Submit</button>{" "}
+            <button className="btn btn-secondary" href="/categories">
               Cancel
             </button>
           </div>
