@@ -4,14 +4,15 @@ import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
 
 class Expenses extends Component {
+  currentDate = new Date();
+
   emptyItem = {
     id: "",
-    expensedate: new Date(),
+    expenseDate: this.currentDate,
     description: "",
     location: "",
     category: {
       id: 4,
-      name: "Other",
     },
   };
 
@@ -22,7 +23,7 @@ class Expenses extends Component {
       isLoading: true,
       expenses: [],
       categories: [],
-      date: new Date(),
+      date: this.currentDate,
       post: this.emptyItem,
     };
 
@@ -47,36 +48,30 @@ class Expenses extends Component {
   }
 
   handleChange(event) {
-    const target = event.target; /* select */
-    const value = target.value; /* liczba */
-    const name = target.name; /* category */
-    console.log(name);
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
     let post = { ...this.state.post };
-
-    console.log("huj");
     post[name] = value;
     this.setState({ post });
-    console.log(this.state.post);
+    console.log(this.state.post[name]);
   }
 
   handleChangeCat(event) {
-    const target = event.target; /* select */
-    const value = target.value; /* liczba */
-    const name = target.name; /* category */
-    console.log(name);
+    const target = event.target;
+    const value = target.value;
     let post = { ...this.state.post };
-
-    console.log("huj");
     post.category.id = value;
     this.setState({ post });
-    console.log(this.state.post);
+    console.log(this.state.post.category);
   }
 
   handleDateChange(date) {
     let post = { ...this.state.post };
-    post.expensedate = date;
+    post.expenseDate = date;
     this.setState({ post });
-    console.log(this.state.post);
+    let asd = JSON.stringify(this.state.post);
+    console.log(asd);
   }
 
   async remove(id) {
@@ -131,7 +126,10 @@ class Expenses extends Component {
         <td>
           <Moment date={exp.expenseDate} format="YYYY/MM/DD" />
         </td>
-        <td>{exp.category.name}</td>
+        <td>
+          {exp.category.name}
+          {console.log(exp)}
+        </td>
         <td>
           <button
             type="button"
@@ -175,11 +173,12 @@ class Expenses extends Component {
             </select>
           </div>
           <div className="mb-3">
-            <label htmlFor="expensedate" className="form-label">
+            <label htmlFor="expenseDate" className="form-label">
               Date
             </label>
             <DatePicker
-              selected={this.state.post.expensedate}
+              selected={this.state.post.expenseDate}
+              dateFormat="yyyy/MM/dd"
               onChange={this.handleDateChange}
               className="form-control"
             />
