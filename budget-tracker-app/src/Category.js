@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import Loader from "./Loader";
+
 class Category extends Component {
   state = {
     isLoading: true,
@@ -13,12 +15,7 @@ class Category extends Component {
 
   render() {
     const { Categories, isLoading } = this.state;
-    if (isLoading)
-      return (
-        <React.Fragment>
-          <h2>Loading...</h2>
-        </React.Fragment>
-      );
+    if (isLoading) return <Loader />;
 
     return (
       <React.Fragment>

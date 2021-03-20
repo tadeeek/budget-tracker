@@ -2,15 +2,17 @@ import React, { Component } from "react";
 import DatePicker from "react-datepicker";
 import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
+import Loader from "./Loader";
 
 class Expenses extends Component {
   currentDate = new Date();
 
-  emptyItem = {
+  examplePost = {
     id: "",
     expenseDate: this.currentDate,
     description: "",
     location: "",
+    price: 0.0,
     category: {
       id: 4,
     },
@@ -24,7 +26,7 @@ class Expenses extends Component {
       expenses: [],
       categories: [],
       date: this.currentDate,
-      post: this.emptyItem,
+      post: this.examplePost,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -100,16 +102,12 @@ class Expenses extends Component {
   }
 
   render() {
-    const title = <h2>Add Expense</h2>;
+    const title = <h2>Expenses</h2>;
     const { categories } = this.state;
     const { expenses, isLoading } = this.state;
 
     if (isLoading) {
-      return (
-        <React.Fragment>
-          <h2>Loading...</h2>
-        </React.Fragment>
-      );
+      return <Loader />;
     }
 
     let categoriesList = categories.map((cat) => (
@@ -120,23 +118,21 @@ class Expenses extends Component {
 
     let expensesList = expenses.map((exp) => (
       <tr key={exp.id}>
-        <td>{exp.id}</td>
-        <td>{exp.description}</td>
-        <td>{exp.location}</td>
         <td>
           <Moment date={exp.expenseDate} format="YYYY/MM/DD" />
         </td>
-        <td>
-          {exp.category.name}
-          {console.log(exp)}
-        </td>
+        <td>{exp.description}</td>
+        <td>{exp.location}</td>
+        <td>{exp.category.name}</td>
+        <td>{exp.price}</td>
         <td>
           <button
             type="button"
             className="btn btn-danger btn-sm"
             onClick={() => this.remove(exp.id)}
+            title="Delete expense"
           >
-            DELETE
+            x
           </button>
         </td>
       </tr>
@@ -144,78 +140,133 @@ class Expenses extends Component {
 
     return (
       <React.Fragment>
+        <div
+          class="modal fade"
+          id="exampleModal"
+          tabindex="-1"
+          aria-labelledby="exampleModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                  Add expense
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <form onSubmit={this.handleSubmit}>
+                <div class="modal-body">
+                  <div className="mb-3">
+                    <label htmlFor="description" className="form-label">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      name="description"
+                      id="description"
+                      className="form-control"
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="category" className="form-label">
+                      Category
+                    </label>
+                    <select
+                      className="form-select"
+                      aria-label="Default select example"
+                      id="category"
+                      name="category"
+                      onChange={this.handleChangeCat}
+                    >
+                      {categoriesList}
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="expenseDate" className="form-label">
+                      Date
+                    </label>
+                    <DatePicker
+                      selected={this.state.post.expenseDate}
+                      dateFormat="yyyy/MM/dd"
+                      onChange={this.handleDateChange}
+                      className="form-control"
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="location" className="form-label">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      name="location"
+                      id="location"
+                      className="form-control"
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="price" className="form-label">
+                      Price
+                    </label>
+                    <input
+                      type="text"
+                      pattern="[0-9]*"
+                      name="price"
+                      id="price"
+                      className="form-control"
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
+
+                  <button className="btn btn-primary">Submit</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
         {title}
-        <form onSubmit={this.handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="description" className="form-label">
-              Title
-            </label>
-            <input
-              type="text"
-              name="description"
-              id="description"
-              className="form-control"
-              onChange={this.handleChange}
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="category" className="form-label">
-              Category
-            </label>
-            <select
-              className="form-select"
-              aria-label="Default select example"
-              id="category"
-              name="category"
-              onChange={this.handleChangeCat}
-            >
-              {categoriesList}
-            </select>
-          </div>
-          <div className="mb-3">
-            <label htmlFor="expenseDate" className="form-label">
-              Date
-            </label>
-            <DatePicker
-              selected={this.state.post.expenseDate}
-              dateFormat="yyyy/MM/dd"
-              onChange={this.handleDateChange}
-              className="form-control"
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="location" className="form-label">
-              Location
-            </label>
-            <input
-              type="text"
-              name="location"
-              id="location"
-              className="form-control"
-              onChange={this.handleChange}
-            />
-          </div>
-          <div className="mb-3">
-            <button className="btn btn-primary">Submit</button>{" "}
-            <button className="btn btn-secondary" href="/categories">
-              Cancel
-            </button>
-          </div>
-        </form>
-        <h2 className="mt-5">Expenses</h2>
-        <table className="table">
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
+        >
+          Add expense
+        </button>
+
+        <table className="table table-hover">
           <thead>
             <tr>
-              <th scope="col" style={{ width: 5 + "%" }}>
-                #
+              <th scope="col" style={{ width: 10 + "%" }}>
+                Date
               </th>
-              <th scope="col" style={{ width: 30 + "%" }}>
-                Description
+              <th scope="col">Description</th>
+              <th scope="col" style={{ width: 15 + "%" }}>
+                Location
               </th>
-              <th scope="col">Location</th>
-              <th scope="col">Date</th>
               <th scope="col" style={{ width: 15 + "%" }}>
                 Category
+              </th>
+              <th scope="col" style={{ width: 15 + "%" }}>
+                Price
               </th>
               <th scope="col" style={{ width: 10 + "%" }}>
                 Action

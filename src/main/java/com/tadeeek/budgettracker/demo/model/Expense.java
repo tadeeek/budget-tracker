@@ -30,6 +30,8 @@ public class Expense {
 
     private String location;
 
+    private double price;
+
     @ManyToOne
     private Category category;
 

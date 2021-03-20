@@ -8,13 +8,13 @@
 }
 
 .btn {
-  min-width: 120px;
   text-transform: uppercase;
   letter-spacing: 1px;
   border: 0px;
 }
 
 .btn-primary {
+  min-width: 120px;
   background-color: #483d7b;
 }
 
@@ -23,6 +23,7 @@
 }
 
 .btn-secondary {
+  min-width: 120px;
   background-color: #ffffff;
   color: #483d7b;
 }
@@ -30,4 +31,12 @@
 .btn-secondary:hover {
   background-color: #ffffff;
   color: #56dad1;
+}
+
+.form-label {
+  font-weight: 700;
+}
+
+.react-datepicker-wrapper {
+  display: block;
 }
