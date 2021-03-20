@@ -56,7 +56,6 @@ class Expenses extends Component {
     let post = { ...this.state.post };
     post[name] = value;
     this.setState({ post });
-    console.log(this.state.post[name]);
   }
 
   handleChangeCat(event) {
@@ -65,15 +64,12 @@ class Expenses extends Component {
     let post = { ...this.state.post };
     post.category.id = value;
     this.setState({ post });
-    console.log(this.state.post.category);
   }
 
   handleDateChange(date) {
     let post = { ...this.state.post };
     post.expenseDate = date;
     this.setState({ post });
-    let asd = JSON.stringify(this.state.post);
-    console.log(asd);
   }
 
   async remove(id) {
