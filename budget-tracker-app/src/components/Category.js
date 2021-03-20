@@ -18,12 +18,12 @@ class Category extends Component {
     if (isLoading) return <Loader />;
 
     return (
-      <React.Fragment>
+      <div className="container pt-3">
         <h2>Categories</h2>
         {Categories.map((category) => (
           <div key={category.id}>{category.name}</div>
         ))}
-      </React.Fragment>
+      </div>
     );
   }
 }

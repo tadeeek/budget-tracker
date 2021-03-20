@@ -4,10 +4,9 @@ class Home extends Component {
   state = {};
   render() {
     return (
-      <React.Fragment>
-        <div></div>
-        <h2>Hello in Home</h2>
-      </React.Fragment>
+      <div className="full-h-bg">
+        <div className="container pt-3"></div>
+      </div>
     );
   }
 }
