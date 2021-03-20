@@ -169,6 +169,7 @@ class Expenses extends Component {
                     <input
                       type="text"
                       name="description"
+                      placeholder="Title"
                       id="description"
                       className="form-control"
                       onChange={this.handleChange}
@@ -207,6 +208,7 @@ class Expenses extends Component {
                       type="text"
                       name="location"
                       id="location"
+                      placeholder="Location"
                       className="form-control"
                       onChange={this.handleChange}
                     />
@@ -216,10 +218,12 @@ class Expenses extends Component {
                       Price
                     </label>
                     <input
-                      type="text"
-                      pattern="[0-9]*"
+                      type="number"
                       name="price"
+                      step="0.01"
+                      min="0"
                       id="price"
+                      placeholder="6.9"
                       className="form-control"
                       onChange={this.handleChange}
                     />
