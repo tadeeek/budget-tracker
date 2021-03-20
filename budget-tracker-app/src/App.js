@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import Category from "./Category";
-import Expenses from "./Expenses";
+import Category from "./components/Category";
+import Expenses from "./components/Expenses";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Home from "./Home";
-import AppNav from "./NavApp";
+import Home from "./components/Home";
+import AppNav from "./components/NavApp";
 
 class App extends Component {
   state = {};
