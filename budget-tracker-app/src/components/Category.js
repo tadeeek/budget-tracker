@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Loader from "./Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class Category extends Component {
   exampleCategoryItem = {
@@ -79,6 +80,11 @@ class Category extends Component {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
+    }).then(() => {
+      let updatedCategories = [...this.state.Categories].filter(
+        (cat) => cat.id !== id
+      );
+      this.setState({ Categories: updatedCategories });
     });
   }
 
@@ -94,20 +100,21 @@ class Category extends Component {
         <td>
           <button
             type="button"
-            className="btn btn-danger btn-sm"
+            class="btn btn-outline-danger btn-sm"
             onClick={() => this.remove(category.id)}
             title="Delete category"
           >
-            x
+            <FontAwesomeIcon icon="times" />
           </button>{" "}
           <button
             type="button"
-            className="btn btn-danger btn-sm"
+            class="btn btn-outline-secondary btn-sm"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal2"
             onClick={() => this.passCategory(category.id, category.name)}
+            title="Edit category"
           >
-            Edit
+            <FontAwesomeIcon icon="edit" />
           </button>
         </td>
       </tr>

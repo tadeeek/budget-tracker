@@ -1,3 +1,4 @@
+/* Body */
 body,
 html {
   height: 100%;
@@ -6,6 +7,11 @@ html {
   height: 100%;
 }
 
+.container {
+  max-width: 1024px;
+}
+
+/* Home */
 .home-bg {
   background: url(../img/home-bg.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
@@ -40,23 +46,25 @@ html {
   border-top-right-radius: 0;
 }
 
-.min-vh-100 {
-  min-height: 100vh !important;
-}
-
-.pt-appnav {
-  padding-top: 80px;
-}
-
-.container {
-  max-width: 1024px;
-}
-
+/* Navbar */
 .navbar {
   background-image: linear-gradient(80deg, #483d7b, #56dad1);
   box-shadow: 1px 2px 3px rgb(0 0 0 / 20%);
 }
+.pt-appnav {
+  padding-top: 80px;
+}
 
+/* Forms */
+.form-label {
+  font-weight: 700;
+}
+
+.react-datepicker-wrapper {
+  display: block;
+}
+
+/* Buttons */
 .btn {
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -82,12 +90,4 @@ html {
 .btn-secondary:hover {
   background-color: #ffffff;
   color: #56dad1;
-}
-
-.form-label {
-  font-weight: 700;
-}
-
-.react-datepicker-wrapper {
-  display: block;
 }

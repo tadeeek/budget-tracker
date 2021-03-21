@@ -3,6 +3,7 @@ import DatePicker from "react-datepicker";
 import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
 import Loader from "./Loader";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 class Expenses extends Component {
   currentDate = new Date();
@@ -124,12 +125,22 @@ class Expenses extends Component {
         <td>
           <button
             type="button"
-            className="btn btn-danger btn-sm"
+            class="btn btn-outline-danger btn-sm"
             onClick={() => this.remove(exp.id)}
             title="Delete expense"
           >
-            x
-          </button>
+            <FontAwesomeIcon icon="times" />
+          </button>{" "}
+          {/* <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#exampleModal2"
+            onClick={() => this.passCategory(category.id, category.name)}
+            title="Edit category"
+          >
+            <FontAwesomeIcon icon="edit" />
+          </button> */}
         </td>
       </tr>
     ));

@@ -5,6 +5,11 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./components/Home";
 import AppNav from "./components/NavApp";
 
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTimes, faEdit } from "@fortawesome/free-solid-svg-icons";
+
+library.add(faTimes, faEdit);
+
 class App extends Component {
   state = {};
   render() {
