@@ -6,13 +6,46 @@ html {
   height: 100%;
 }
 
-.full-h-bg {
-  min-height: calc(100vh - 56px);
+.home-bg {
   background: url(../img/home-bg.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+
+.home-signin {
+  width: 100%;
+  max-width: 310px;
+}
+
+.home-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+.home-signin .form-control:focus {
+  z-index: 2;
+}
+.home-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.home-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.min-vh-100 {
+  min-height: 100vh !important;
+}
+
+.pt-appnav {
+  padding-top: 80px;
 }
 
 .container {
@@ -21,12 +54,14 @@ html {
 
 .navbar {
   background-image: linear-gradient(80deg, #483d7b, #56dad1);
+  box-shadow: 1px 2px 3px rgb(0 0 0 / 20%);
 }
 
 .btn {
   text-transform: uppercase;
   letter-spacing: 1px;
   border: 0px;
+  transition: 0.3s;
 }
 
 .btn-primary {

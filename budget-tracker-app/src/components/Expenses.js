@@ -135,7 +135,7 @@ class Expenses extends Component {
     ));
 
     return (
-      <div className="container pt-3">
+      <div className="container pt-appnav">
         <div
           className="modal fade"
           id="exampleModal"
