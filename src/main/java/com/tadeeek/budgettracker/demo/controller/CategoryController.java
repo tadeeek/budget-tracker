@@ -53,8 +53,9 @@ public class CategoryController {
 
     }
 
-    @PutMapping("/categories/{id}")
+    @PutMapping("/categories")
     public ResponseEntity<Category> updateCategory(@Valid @RequestBody Category category) {
+
         Category result = categoryRepository.save(category);
 
         return ResponseEntity.ok().body(result);
