@@ -1,0 +1,93 @@
+body,
+html {
+  height: 100%;
+}
+#root {
+  height: 100%;
+}
+
+.home-bg {
+  background: url(../img/home-bg.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.home-signin {
+  width: 100%;
+  max-width: 310px;
+}
+
+.home-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+.home-signin .form-control:focus {
+  z-index: 2;
+}
+.home-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.home-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.min-vh-100 {
+  min-height: 100vh !important;
+}
+
+.pt-appnav {
+  padding-top: 80px;
+}
+
+.container {
+  max-width: 1024px;
+}
+
+.navbar {
+  background-image: linear-gradient(80deg, #483d7b, #56dad1);
+  box-shadow: 1px 2px 3px rgb(0 0 0 / 20%);
+}
+
+.btn {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: 0px;
+  transition: 0.3s;
+}
+
+.btn-primary {
+  min-width: 120px;
+  background-color: #483d7b;
+}
+
+.btn-primary:hover {
+  background-color: black;
+}
+
+.btn-secondary {
+  min-width: 120px;
+  background-color: #ffffff;
+  color: #483d7b;
+}
+
+.btn-secondary:hover {
+  background-color: #ffffff;
+  color: #56dad1;
+}
+
+.form-label {
+  font-weight: 700;
+}
+
+.react-datepicker-wrapper {
+  display: block;
+}
