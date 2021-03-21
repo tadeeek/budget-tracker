@@ -113,6 +113,10 @@ class Expenses extends Component {
       </option>
     ));
 
+    let expensesTotal = expenses.reduce(function (acc, obj) {
+      return acc + obj.price;
+    }, 0);
+
     let expensesList = expenses.map((exp) => (
       <tr key={exp.id}>
         <td>
@@ -269,8 +273,10 @@ class Expenses extends Component {
               <th scope="col" style={{ width: 10 + "%" }}>
                 Date
               </th>
-              <th scope="col">Description</th>
-              <th scope="col" style={{ width: 15 + "%" }}>
+              <th scope="col" style={{ width: 30 + "%" }}>
+                Description
+              </th>
+              <th scope="col" style={{ width: 20 + "%" }}>
                 Location
               </th>
               <th scope="col" style={{ width: 15 + "%" }}>
@@ -285,6 +291,20 @@ class Expenses extends Component {
             </tr>
           </thead>
           <tbody>{expensesList}</tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                <span className="fw-bold">Total:</span>
+              </td>
+              <td>
+                <span className="fw-bold">{expensesTotal}</span>
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     );

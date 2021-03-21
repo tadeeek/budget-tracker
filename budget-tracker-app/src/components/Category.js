@@ -239,8 +239,10 @@ class Category extends Component {
         <table className="table table-hover">
           <thead>
             <tr>
-              <th scope="col">Name</th>
-              <th scope="col" style={{ width: 10 + "%" }}>
+              <th scope="col" style={{ width: 80 + "%" }}>
+                Name
+              </th>
+              <th scope="col" style={{ width: 20 + "%" }}>
                 Action
               </th>
             </tr>
