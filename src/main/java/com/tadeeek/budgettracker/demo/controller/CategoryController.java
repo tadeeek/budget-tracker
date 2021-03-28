@@ -29,12 +29,12 @@ public class CategoryController {
 
     @Autowired
     public CategoryController(CategoryRepository categoryRepository) {
-
         this.categoryRepository = categoryRepository;
     }
 
     @GetMapping("/categories")
     public List<Category> categories() {
+
         return categoryRepository.findAll();
     }
 
@@ -46,9 +46,7 @@ public class CategoryController {
 
     @PostMapping("/categories")
     public ResponseEntity<Category> addCategory(@Valid @RequestBody Category category) throws URISyntaxException {
-
         Category result = categoryRepository.save(category);
-
         return ResponseEntity.created(new URI("/api/categories" + result.getId())).body(result);
 
     }

@@ -151,6 +151,7 @@ class Expenses extends Component {
 
     return (
       <div className="container pt-appnav">
+        {/* POST FORM MODAL*/}
         <div
           className="modal fade"
           id="exampleModal"
