@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { $ } from "react-jquery-plugin";
 
 class Category extends Component {
   exampleCategoryItem = {
@@ -16,16 +17,23 @@ class Category extends Component {
       categories: [],
       categoryItem: this.exampleCategoryItem,
       errorMessage: "",
+      errorMessageCategoryName: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSubmitPUT = this.handleSubmitPUT.bind(this);
     this.handleChange = this.handleChange.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   }
 
   async componentDidMount() {
     const response = await fetch("/api/categories");
     const body = await response.json();
     this.setState({ categories: body, isLoading: false });
+  }
+
+  //Bootsrap modal close function
+  closeModal() {
+    $("#exampleModal").modal("hide");
   }
 
   handleChange(event) {
@@ -35,7 +43,6 @@ class Category extends Component {
     let categoryItem = { ...this.state.categoryItem };
     categoryItem[name] = value;
     this.setState({ categoryItem });
-    console.log({ categoryItem });
   }
 
   async handleSubmit(event) {
@@ -52,18 +59,23 @@ class Category extends Component {
       .then(async (response) => {
         const data = await response.json();
         if (!response.ok) {
-          const error = (data && data.message) || response.status;
-          console.log(error);
+          const error = data.message;
+          const errorDetails = data.details;
+          this.setState({ errorMessageCategoryName: errorDetails[0].message });
           return Promise.reject(error);
         }
         const GETresponse = await fetch("/api/categories");
         const body = await GETresponse.json();
-        this.setState({ categories: body, isLoading: false });
+        this.setState({
+          categories: body,
+          isLoading: false,
+          errorMessageCategoryName: "",
+        });
+        this.closeModal();
       })
       .catch((error) => {
         this.setState({ errorMessage: error.toString() });
         console.error("There was an error!", error);
-        console.log(error);
       });
   }
 
@@ -84,7 +96,7 @@ class Category extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(categoryItem),
-    }).th;
+    }).then;
     event.preventDefault();
     this.props.history.push("/categories");
   }
@@ -111,7 +123,7 @@ class Category extends Component {
     if (isLoading) return <Loader />;
 
     {
-      /* POST FORM MODAL */
+      /* Categories row */
     }
     let categoriesList = categories.map((category) => (
       <tr key={category.id}>
@@ -141,13 +153,14 @@ class Category extends Component {
 
     return (
       <div className="container pt-appnav">
-        {/* POST FORM MODAL*/}
-        {/* <div
+        {/* POST FORM MODAL */}
+        <div
           className="modal fade"
           id="exampleModal"
           tabIndex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
+          ref={this.modalRef}
         >
           <div className="modal-dialog">
             <div className="modal-content">
@@ -161,40 +174,43 @@ class Category extends Component {
                   data-bs-dismiss="modal"
                   aria-label="Close"
                 ></button>
-              </div> */}
-        <form onSubmit={this.handleSubmit}>
-          {/* <div className="modal-body"> */}
-          <div className="mb-3">
-            <label htmlFor="description" className="form-label">
-              Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              placeholder="Category name"
-              id="name"
-              className="form-control"
-              onChange={this.handleChange}
-            />
-          </div>
-          {/* </div> */}
-          {/* <div className="modal-footer"> */}
-          <button
-            type="button"
-            className="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Cancel
-          </button>
+              </div>
+              <form onSubmit={this.handleSubmit}>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label htmlFor="description" className="form-label">
+                      Name{" "}
+                      <span className="text-danger">
+                        {this.state.errorMessageCategoryName}
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Category name"
+                      id="name"
+                      className="form-control"
+                      onChange={this.handleChange}
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Cancel
+                  </button>
 
-          <button className="btn btn-primary" type="submit">
-            Submit
-          </button>
-          {/* </div> */}
-        </form>
-        {/* </div>
+                  <button className="btn btn-primary" type="submit">
+                    Submit
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div> */}
+        </div>
         {/* UPDATE FORM MODAL*/}
         <div
           className="modal fade"

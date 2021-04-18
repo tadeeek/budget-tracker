@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
 import com.tadeeek.budgettracker.demo.model.Category;
 import com.tadeeek.budgettracker.demo.repository.CategoryRepository;
 
@@ -34,35 +35,48 @@ public class CategoryController {
 
     @GetMapping("/categories")
     public List<Category> categories() {
-
         return categoryRepository.findAll();
     }
 
     @GetMapping("/categories/{id}")
-    public ResponseEntity<?> getCategory(@PathVariable Long id) {
+    public Category getCategory(@PathVariable Long id) {
         Optional<Category> category = categoryRepository.findById(id);
-        return category.map(res -> ResponseEntity.ok().body(res)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        Category theCategory = null;
+
+        if (category.isPresent()) {
+            theCategory = category.get();
+        } else {
+            throw new ApiRequestException("Did not find category id - " + id);
+        }
+
+        return theCategory;
     }
 
     @PostMapping("/categories")
-    public ResponseEntity<Category> addCategory(@Valid @RequestBody Category category) throws URISyntaxException {
-        Category result = categoryRepository.save(category);
-        return ResponseEntity.created(new URI("/api/categories" + result.getId())).body(result);
+    public Category addCategory(@Valid @RequestBody Category category) {
+        categoryRepository.save(category);
 
+        return category;
     }
 
     @PutMapping("/categories")
-    public ResponseEntity<Category> updateCategory(@Valid @RequestBody Category category) {
+    public Category updateCategory(@Valid @RequestBody Category category) {
 
-        Category result = categoryRepository.save(category);
+        categoryRepository.save(category);
 
-        return ResponseEntity.ok().body(result);
+        return category;
     }
 
     @DeleteMapping("/categories/{id}")
-    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+    public String deleteCategory(@PathVariable Long id) {
+
+        Optional<Category> theCategory = categoryRepository.findById(id);
+
+        if (theCategory == null) {
+            throw new ApiRequestException("Did not find category id - " + id + " to delete.");
+        }
         categoryRepository.deleteById(id);
 
-        return ResponseEntity.ok().build();
+        return "Category of id: " + id + " was deleted";
     }
 }

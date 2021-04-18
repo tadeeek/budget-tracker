@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class Category {
     private Long id;
 
     @NonNull
+    @NotEmpty(message = "Category name shoult not be empty")
     @Size(min = 2, message = "Category name should have atleast 2 characters")
     private String name;
 
