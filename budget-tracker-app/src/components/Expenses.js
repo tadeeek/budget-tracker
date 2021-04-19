@@ -4,6 +4,7 @@ import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
 import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { $ } from "react-jquery-plugin";
 
 class Expenses extends Component {
   currentDate = new Date();
@@ -28,6 +29,10 @@ class Expenses extends Component {
       categories: [],
       date: this.currentDate,
       post: this.examplePost,
+      errorMessage: "",
+      errorMessageDescription: "",
+      errorMessageLocation: "",
+      errorMessagePrice: "",
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -36,7 +41,23 @@ class Expenses extends Component {
     this.handleDateChange = this.handleDateChange.bind(this);
   }
 
+  async componentDidMount() {
+    const responseCat = await fetch("/api/categories");
+    const bodyCat = await responseCat.json();
+    this.setState({ categories: bodyCat, isLoading: false });
+
+    const responseExp = await fetch("/api/expenses");
+    const bodyExp = await responseExp.json();
+    this.setState({ expenses: bodyExp, isLoading: false });
+  }
+
+  closeModal() {
+    $("#exampleModal").modal("hide");
+  }
+
   async handleSubmit(event) {
+    event.preventDefault();
+
     const post = this.state.post;
     await fetch("/api/expenses", {
       method: "POST",
@@ -45,9 +66,52 @@ class Expenses extends Component {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(post),
-    });
-    event.preventDefault();
-    this.props.history.push("/expenses");
+    })
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) {
+          const error = data.message;
+          const errorDetails = data.details;
+
+          for (let i = 0; i < errorDetails.length; i++) {
+            console.log(errorDetails[i]);
+
+            switch (errorDetails[i].object) {
+              case "description":
+                this.setState({
+                  errorMessageDescription: errorDetails[i].message,
+                });
+                break;
+              case "location":
+                this.setState({
+                  errorMessageLocation: errorDetails[i].message,
+                });
+                break;
+              case "price":
+                this.setState({
+                  errorMessagePrice: errorDetails[i].message,
+                });
+                break;
+              default:
+            }
+          }
+
+          return Promise.reject(error);
+        }
+        const GETresponse = await fetch("/api/expenses");
+        const body = await GETresponse.json();
+
+        this.setState({
+          expenses: body,
+          isLoading: false,
+          errorMessageName: "",
+        });
+        this.closeModal();
+      })
+      .catch((error) => {
+        this.setState({ errorMessage: error.toString() });
+        console.error("There was an error!", error);
+      });
   }
 
   handleChange(event) {
@@ -86,16 +150,6 @@ class Expenses extends Component {
       );
       this.setState({ expenses: updatedExpenses });
     });
-  }
-
-  async componentDidMount() {
-    const responseCat = await fetch("/api/categories");
-    const bodyCat = await responseCat.json();
-    this.setState({ categories: bodyCat, isLoading: false });
-
-    const responseExp = await fetch("/api/expenses");
-    const bodyExp = await responseExp.json();
-    this.setState({ expenses: bodyExp, isLoading: false });
   }
 
   render() {
@@ -176,7 +230,10 @@ class Expenses extends Component {
                 <div className="modal-body">
                   <div className="mb-3">
                     <label htmlFor="description" className="form-label">
-                      Title
+                      Description{" "}
+                      <span className="text-danger">
+                        {this.state.errorMessageDescription}
+                      </span>
                     </label>
                     <input
                       type="text"
@@ -214,7 +271,10 @@ class Expenses extends Component {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="location" className="form-label">
-                      Location
+                      Location{" "}
+                      <span className="text-danger">
+                        {this.state.errorMessageLocation}
+                      </span>
                     </label>
                     <input
                       type="text"
@@ -227,7 +287,10 @@ class Expenses extends Component {
                   </div>
                   <div className="mb-3">
                     <label htmlFor="price" className="form-label">
-                      Price
+                      Price{" "}
+                      <span className="text-danger">
+                        {this.state.errorMessagePrice}
+                      </span>
                     </label>
                     <input
                       type="number"

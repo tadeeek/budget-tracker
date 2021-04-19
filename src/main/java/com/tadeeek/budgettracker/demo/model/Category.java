@@ -23,8 +23,8 @@ public class Category {
     private Long id;
 
     @NonNull
-    @NotEmpty(message = "Category name shoult not be empty")
-    @Size(min = 2, message = "Category name should have atleast 2 characters")
+    @NotEmpty(message = "Category name should not be empty")
+    @Size(max = 16, message = "Category name is too long. Should have maximum 16 characters")
     private String name;
 
 }
