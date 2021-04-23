@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { $ } from "react-jquery-plugin";
 
 class Category extends Component {
   exampleCategoryItem = {
@@ -16,13 +15,16 @@ class Category extends Component {
       isLoading: true,
       categories: [],
       categoryItem: this.exampleCategoryItem,
+      showModal: false,
+      formMethod: "PUT",
       errorMessage: "",
       errorMessageCategoryName: "",
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleSubmitPUT = this.handleSubmitPUT.bind(this);
     this.handleChange = this.handleChange.bind(this);
-    this.closeModal = this.closeModal.bind(this);
+    this.changeFormMethod = this.changeFormMethod.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.hideModal = this.hideModal.bind(this);
   }
 
   async componentDidMount() {
@@ -31,10 +33,25 @@ class Category extends Component {
     this.setState({ categories: body, isLoading: false });
   }
 
-  //Bootsrap modal close function
-  closeModal() {
-    $("#exampleModal").modal("hide");
+  changeFormMethod(method) {
+    this.setState({ formMethod: method });
   }
+
+  openModal = (event) => {
+    document.body.classList.add("modal-open");
+    this.setState({ showModal: true });
+    var backdrop = document.createElement("div");
+    backdrop.setAttribute("id", "modalBackdrop");
+    backdrop.classList.add("modal-backdrop", "fade", "show");
+    document.body.appendChild(backdrop);
+  };
+
+  hideModal = (event) => {
+    document.body.classList.remove("modal-open");
+    this.setState({ showModal: false });
+    var backdrop = document.getElementById("modalBackdrop");
+    document.body.removeChild(backdrop);
+  };
 
   handleChange(event) {
     const target = event.target;
@@ -45,11 +62,11 @@ class Category extends Component {
     this.setState({ categoryItem });
   }
 
-  async handleSubmit(event) {
+  async handleSubmit(event, method) {
     event.preventDefault();
     const categoryItem = this.state.categoryItem;
     await fetch("/api/categories", {
-      method: "POST",
+      method: method,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -71,7 +88,7 @@ class Category extends Component {
           isLoading: false,
           errorMessageCategoryName: "",
         });
-        this.closeModal();
+        this.hideModal();
       })
       .catch((error) => {
         this.setState({ errorMessage: error.toString() });
@@ -84,21 +101,6 @@ class Category extends Component {
     categoryItem.id = id;
     categoryItem.name = name;
     this.setState({ categoryItem });
-  }
-
-  async handleSubmitPUT(event) {
-    console.log("inSubmitPut");
-    const categoryItem = this.state.categoryItem;
-    await fetch("/api/categories/", {
-      method: "PUT",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(categoryItem),
-    }).then;
-    event.preventDefault();
-    this.props.history.push("/categories");
   }
 
   async remove(id) {
@@ -118,7 +120,7 @@ class Category extends Component {
 
   render() {
     const title = <h2>Categories</h2>;
-    const { categories, isLoading } = this.state;
+    const { categories, isLoading, showModal } = this.state;
 
     if (isLoading) return <Loader />;
 
@@ -140,9 +142,11 @@ class Category extends Component {
           <button
             type="button"
             className="btn btn-outline-secondary btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal2"
-            onClick={() => this.passCategory(category.id, category.name)}
+            onClick={() => {
+              this.changeFormMethod("PUT");
+              this.passCategory(category.id, category.name);
+              this.openModal();
+            }}
             title="Edit category"
           >
             <FontAwesomeIcon icon="edit" />
@@ -153,29 +157,31 @@ class Category extends Component {
 
     return (
       <div className="container pt-appnav">
-        {/* POST FORM MODAL */}
         <div
-          className="modal fade"
-          id="exampleModal"
+          className={"modal fade " + (showModal ? "show d-block" : "d-none")}
+          id="categoryModal"
           tabIndex="-1"
-          aria-labelledby="exampleModalLabel"
           aria-hidden="true"
-          ref={this.modalRef}
         >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">
+                <h5
+                  className="modal-title"
+                  id={"categoryModal" + this.state.formMethod + "Label"}
+                >
                   Add category
                 </h5>
                 <button
                   type="button"
                   className="btn-close"
-                  data-bs-dismiss="modal"
+                  onClick={this.hideModal}
                   aria-label="Close"
                 ></button>
               </div>
-              <form onSubmit={this.handleSubmit}>
+              <form
+                onSubmit={(e) => this.handleSubmit(e, this.state.formMethod)}
+              >
                 <div className="modal-body">
                   <div className="mb-3">
                     <label htmlFor="description" className="form-label">
@@ -198,7 +204,7 @@ class Category extends Component {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    data-bs-dismiss="modal"
+                    onClick={this.hideModal}
                   >
                     Cancel
                   </button>
@@ -211,65 +217,16 @@ class Category extends Component {
             </div>
           </div>
         </div>
-        {/* UPDATE FORM MODAL*/}
-        <div
-          className="modal fade"
-          id="exampleModal2"
-          tabIndex="-1"
-          aria-labelledby="exampleModalLabel2"
-          aria-hidden="true"
-        >
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel2">
-                  Edit category
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <form onSubmit={this.handleSubmitPUT}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label htmlFor="name" className="form-label">
-                      Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder={this.state.categoryItem.name}
-                      id="name"
-                      className="form-control"
-                      onChange={this.handleChange}
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Cancel
-                  </button>
-                  <button className="btn btn-primary">Submit</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
 
         {title}
 
         <button
           type="button"
           className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
+          onClick={() => {
+            this.changeFormMethod("POST");
+            this.openModal();
+          }}
         >
           Add category
         </button>
