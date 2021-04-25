@@ -20,6 +20,7 @@ class Category extends Component {
       errorMessage: "",
       errorMessageCategoryName: "",
     };
+
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.changeFormMethod = this.changeFormMethod.bind(this);
@@ -37,7 +38,7 @@ class Category extends Component {
     this.setState({ formMethod: method });
   }
 
-  openModal = (event) => {
+  openModal = () => {
     document.body.classList.add("modal-open");
     this.setState({ showModal: true });
     var backdrop = document.createElement("div");
@@ -46,11 +47,25 @@ class Category extends Component {
     document.body.appendChild(backdrop);
   };
 
-  hideModal = (event) => {
+  hideModal = () => {
     document.body.classList.remove("modal-open");
-    this.setState({ showModal: false });
+    this.setState({
+      showModal: false,
+    });
     var backdrop = document.getElementById("modalBackdrop");
     document.body.removeChild(backdrop);
+  };
+
+  // MAnuallyyyyy clear state and input fields
+  clearFieldsAndErrors = () => {
+    this.setState({
+      errorMessage: "",
+      errorMessageCategoryName: "",
+      categoryItem: {
+        id: null,
+        name: "",
+      },
+    });
   };
 
   handleChange(event) {
@@ -86,9 +101,9 @@ class Category extends Component {
         this.setState({
           categories: body,
           isLoading: false,
-          errorMessageCategoryName: "",
         });
         this.hideModal();
+        this.clearFieldsAndErrors();
       })
       .catch((error) => {
         this.setState({ errorMessage: error.toString() });
@@ -120,7 +135,7 @@ class Category extends Component {
 
   render() {
     const title = <h2>Categories</h2>;
-    const { categories, isLoading, showModal } = this.state;
+    const { categories, isLoading, showModal, formMethod } = this.state;
 
     if (isLoading) return <Loader />;
 
@@ -170,12 +185,15 @@ class Category extends Component {
                   className="modal-title"
                   id={"categoryModal" + this.state.formMethod + "Label"}
                 >
-                  Add category
+                  {(formMethod === "PUT" ? "Edit" : "Add") + " category"}
                 </h5>
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={this.hideModal}
+                  onClick={() => {
+                    this.clearFieldsAndErrors();
+                    this.hideModal();
+                  }}
                   aria-label="Close"
                 ></button>
               </div>
@@ -193,10 +211,10 @@ class Category extends Component {
                     <input
                       type="text"
                       name="name"
-                      placeholder="Category name"
                       id="name"
                       className="form-control"
                       onChange={this.handleChange}
+                      value={this.state.categoryItem.name}
                     />
                   </div>
                 </div>
@@ -204,7 +222,10 @@ class Category extends Component {
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    onClick={this.hideModal}
+                    onClick={() => {
+                      this.clearFieldsAndErrors();
+                      this.hideModal();
+                    }}
                   >
                     Cancel
                   </button>

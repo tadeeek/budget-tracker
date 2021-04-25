@@ -4,7 +4,6 @@ import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
 import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { $ } from "react-jquery-plugin";
 
 class Expenses extends Component {
   currentDate = new Date();
@@ -29,6 +28,8 @@ class Expenses extends Component {
       categories: [],
       date: this.currentDate,
       post: this.examplePost,
+      showModal: false,
+      formMethod: "PUT",
       errorMessage: "",
       errorMessageDescription: "",
       errorMessageLocation: "",
@@ -39,6 +40,9 @@ class Expenses extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleChangeCat = this.handleChangeCat.bind(this);
     this.handleDateChange = this.handleDateChange.bind(this);
+    this.changeFormMethod = this.changeFormMethod.bind(this);
+    this.openModal = this.openModal.bind(this);
+    this.hideModal = this.hideModal.bind(this);
   }
 
   async componentDidMount() {
@@ -51,16 +55,33 @@ class Expenses extends Component {
     this.setState({ expenses: bodyExp, isLoading: false });
   }
 
-  closeModal() {
-    $("#exampleModal").modal("hide");
+  changeFormMethod(method) {
+    this.setState({ formMethod: method });
   }
 
-  async handleSubmit(event) {
+  openModal = () => {
+    document.body.classList.add("modal-open");
+    this.setState({ showModal: true });
+    var backdrop = document.createElement("div");
+    backdrop.setAttribute("id", "modalBackdrop");
+    backdrop.classList.add("modal-backdrop", "fade", "show");
+    document.body.appendChild(backdrop);
+  };
+
+  hideModal = () => {
+    document.body.classList.remove("modal-open");
+    this.setState({ showModal: false });
+    var backdrop = document.getElementById("modalBackdrop");
+    document.body.removeChild(backdrop);
+  };
+
+  async handleSubmit(event, method) {
     event.preventDefault();
+    this.clearFieldsAndErrors();
 
     const post = this.state.post;
     await fetch("/api/expenses", {
-      method: "POST",
+      method: method,
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -75,7 +96,6 @@ class Expenses extends Component {
 
           for (let i = 0; i < errorDetails.length; i++) {
             console.log(errorDetails[i]);
-
             switch (errorDetails[i].object) {
               case "description":
                 this.setState({
@@ -104,15 +124,35 @@ class Expenses extends Component {
         this.setState({
           expenses: body,
           isLoading: false,
-          errorMessageName: "",
         });
-        this.closeModal();
+        this.hideModal();
+        this.clearFieldsAndErrors();
       })
       .catch((error) => {
         this.setState({ errorMessage: error.toString() });
         console.error("There was an error!", error);
       });
   }
+
+  // MAnuallyyyyy clear state and input fields
+  clearFieldsAndErrors = () => {
+    this.setState({
+      errorMessage: "",
+      errorMessageDescription: "",
+      errorMessageLocation: "",
+      errorMessagePrice: "",
+      post: {
+        id: null,
+        expenseDate: this.currentDate,
+        description: "",
+        location: "",
+        price: "",
+        category: {
+          id: 4,
+        },
+      },
+    });
+  };
 
   handleChange(event) {
     const target = event.target;
@@ -121,6 +161,7 @@ class Expenses extends Component {
     let post = { ...this.state.post };
     post[name] = value;
     this.setState({ post });
+    console.log(this.state.post);
   }
 
   handleChangeCat(event) {
@@ -135,6 +176,20 @@ class Expenses extends Component {
     let post = { ...this.state.post };
     post.expenseDate = date;
     this.setState({ post });
+  }
+
+  passExpense(id, expDate, description, location, categoryId, price) {
+    let post = { ...this.state.post };
+    post.id = id;
+    //convert date from server
+    let utcDate = expDate;
+    post.expenseDate = new Date(utcDate);
+    post.description = description;
+    post.category.id = categoryId;
+    post.location = location;
+    post.price = price;
+    this.setState({ post });
+    console.log(this.state.post);
   }
 
   async remove(id) {
@@ -155,7 +210,7 @@ class Expenses extends Component {
   render() {
     const title = <h2>Expenses</h2>;
     const { categories } = this.state;
-    const { expenses, isLoading } = this.state;
+    const { expenses, isLoading, showModal, formMethod } = this.state;
 
     if (isLoading) {
       return <Loader />;
@@ -189,45 +244,71 @@ class Expenses extends Component {
           >
             <FontAwesomeIcon icon="times" />
           </button>{" "}
-          {/* <button
+          <button
             type="button"
-            class="btn btn-outline-secondary btn-sm"
-            data-bs-toggle="modal"
-            data-bs-target="#exampleModal2"
-            onClick={() => this.passCategory(category.id, category.name)}
-            title="Edit category"
+            className="btn btn-outline-secondary btn-sm"
+            onClick={() => {
+              this.changeFormMethod("PUT");
+              this.passExpense(
+                exp.id,
+                exp.expenseDate,
+                exp.description,
+                exp.location,
+                exp.category.id,
+                exp.price
+              );
+              this.openModal();
+            }}
+            title="Edit expense"
           >
             <FontAwesomeIcon icon="edit" />
-          </button> */}
+          </button>
         </td>
       </tr>
     ));
 
     return (
       <div className="container pt-appnav">
-        {/* POST FORM MODAL*/}
         <div
-          className="modal fade"
-          id="exampleModal"
-          tabindex="-1"
-          aria-labelledby="exampleModalLabel"
+          className={"modal fade " + (showModal ? "show d-block" : "d-none")}
+          id="expenseModal"
+          tabIndex="-1"
           aria-hidden="true"
         >
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="exampleModalLabel">
-                  Add expense
+                <h5
+                  className="modal-title"
+                  id={"expenseModal" + this.state.formMethod + "Label"}
+                >
+                  {(formMethod === "PUT" ? "Edit" : "Add") + " expense"}
                 </h5>
                 <button
                   type="button"
                   className="btn-close"
-                  data-bs-dismiss="modal"
+                  onClick={() => {
+                    this.clearFieldsAndErrors();
+                    this.hideModal();
+                  }}
                   aria-label="Close"
                 ></button>
               </div>
-              <form onSubmit={this.handleSubmit}>
+              <form
+                onSubmit={(e) => this.handleSubmit(e, this.state.formMethod)}
+              >
                 <div className="modal-body">
+                  <div className="mb-3">
+                    <label htmlFor="expenseDate" className="form-label">
+                      Date
+                    </label>
+                    <DatePicker
+                      selected={this.state.post.expenseDate}
+                      dateFormat="yyyy/MM/dd"
+                      onChange={this.handleDateChange}
+                      className="form-control"
+                    />
+                  </div>
                   <div className="mb-3">
                     <label htmlFor="description" className="form-label">
                       Description{" "}
@@ -238,35 +319,10 @@ class Expenses extends Component {
                     <input
                       type="text"
                       name="description"
-                      placeholder="Title"
                       id="description"
                       className="form-control"
                       onChange={this.handleChange}
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="category" className="form-label">
-                      Category
-                    </label>
-                    <select
-                      className="form-select"
-                      aria-label="Default select example"
-                      id="category"
-                      name="category"
-                      onChange={this.handleChangeCat}
-                    >
-                      {categoriesList}
-                    </select>
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="expenseDate" className="form-label">
-                      Date
-                    </label>
-                    <DatePicker
-                      selected={this.state.post.expenseDate}
-                      dateFormat="yyyy/MM/dd"
-                      onChange={this.handleDateChange}
-                      className="form-control"
+                      value={this.state.post.description}
                     />
                   </div>
                   <div className="mb-3">
@@ -280,11 +336,27 @@ class Expenses extends Component {
                       type="text"
                       name="location"
                       id="location"
-                      placeholder="Location"
                       className="form-control"
                       onChange={this.handleChange}
+                      value={this.state.post.location}
                     />
                   </div>
+                  <div className="mb-3">
+                    <label htmlFor="category" className="form-label">
+                      Category
+                    </label>
+                    <select
+                      className="form-select"
+                      aria-label="Default select example"
+                      id="category"
+                      name="category"
+                      onChange={this.handleChangeCat}
+                      value={this.state.post.category.id}
+                    >
+                      {categoriesList}
+                    </select>
+                  </div>
+
                   <div className="mb-3">
                     <label htmlFor="price" className="form-label">
                       Price{" "}
@@ -298,17 +370,20 @@ class Expenses extends Component {
                       step="0.01"
                       min="0"
                       id="price"
-                      placeholder="6.9"
                       className="form-control"
                       onChange={this.handleChange}
+                      value={this.state.post.price}
                     />
                   </div>
                 </div>
                 <div class="modal-footer">
                   <button
                     type="button"
-                    class="btn btn-secondary"
-                    data-bs-dismiss="modal"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      this.clearFieldsAndErrors();
+                      this.hideModal();
+                    }}
                   >
                     Cancel
                   </button>
@@ -325,8 +400,10 @@ class Expenses extends Component {
         <button
           type="button"
           className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
+          onClick={() => {
+            this.changeFormMethod("POST");
+            this.openModal();
+          }}
         >
           Add expense
         </button>
