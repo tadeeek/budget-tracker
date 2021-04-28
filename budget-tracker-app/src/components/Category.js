@@ -145,7 +145,7 @@ class Category extends Component {
     let categoriesList = categories.map((category) => (
       <tr key={category.id}>
         <td>{category.name}</td>
-        <td>
+        <td className="table-align-center">
           <button
             type="button"
             className="btn btn-outline-danger btn-sm"
@@ -256,10 +256,14 @@ class Category extends Component {
         <table className="table table-hover">
           <thead>
             <tr>
-              <th scope="col" style={{ width: 80 + "%" }}>
+              <th scope="col" style={{ width: 85 + "%" }}>
                 Name
               </th>
-              <th scope="col" style={{ width: 20 + "%" }}>
+              <th
+                scope="col"
+                style={{ width: 15 + "%" }}
+                className="table-align-center"
+              >
                 Action
               </th>
             </tr>

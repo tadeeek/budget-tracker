@@ -146,7 +146,7 @@ class Expenses extends Component {
         expenseDate: this.currentDate,
         description: "",
         location: "",
-        price: "",
+        price: 0,
         category: {
           id: 4,
         },
@@ -161,7 +161,6 @@ class Expenses extends Component {
     let post = { ...this.state.post };
     post[name] = value;
     this.setState({ post });
-    console.log(this.state.post);
   }
 
   handleChangeCat(event) {
@@ -189,7 +188,6 @@ class Expenses extends Component {
     post.location = location;
     post.price = price;
     this.setState({ post });
-    console.log(this.state.post);
   }
 
   async remove(id) {
@@ -234,8 +232,10 @@ class Expenses extends Component {
         <td>{exp.description}</td>
         <td>{exp.location}</td>
         <td>{exp.category.name}</td>
-        <td>{exp.price}</td>
-        <td>
+        <td className="table-align-right">
+          {(Math.round(exp.price * 100) / 100).toFixed(2)}
+        </td>
+        <td className="table-align-center">
           <button
             type="button"
             class="btn btn-outline-danger btn-sm"
@@ -423,10 +423,18 @@ class Expenses extends Component {
               <th scope="col" style={{ width: 15 + "%" }}>
                 Category
               </th>
-              <th scope="col" style={{ width: 15 + "%" }}>
+              <th
+                scope="col"
+                style={{ width: 10 + "%" }}
+                className="table-align-right"
+              >
                 Price
               </th>
-              <th scope="col" style={{ width: 10 + "%" }}>
+              <th
+                scope="col"
+                style={{ width: 15 + "%" }}
+                className="table-align-center"
+              >
                 Action
               </th>
             </tr>
@@ -437,10 +445,10 @@ class Expenses extends Component {
               <td></td>
               <td></td>
               <td></td>
-              <td>
+              <td className="table-align-right">
                 <span className="fw-bold">Total:</span>
               </td>
-              <td>
+              <td className="table-align-right">
                 <span className="fw-bold">{expensesTotal}</span>
               </td>
               <td></td>

@@ -64,6 +64,15 @@ html {
   display: block;
 }
 
+/* Tables */
+.table-align-right {
+  text-align: right;
+}
+
+.table-align-center {
+  text-align: center;
+}
+
 /* Buttons */
 .btn {
   text-transform: uppercase;
