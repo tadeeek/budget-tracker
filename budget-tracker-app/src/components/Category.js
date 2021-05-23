@@ -30,7 +30,10 @@ class Category extends Component {
   }
 
   async getCategories() {
-    const response = await axios.get(`/api/categories`);
+    const dataToken = JSON.parse(localStorage.getItem("dataToken"));
+    const response = await axios.get(`/api/categories`, {
+      headers: { Authorization: `Bearer ${dataToken.jwt}` },
+    });
     const body = response.data;
     this.setState({ categories: body, isLoading: false });
   }
@@ -38,22 +41,6 @@ class Category extends Component {
   async componentDidMount() {
     this.getCategories();
   }
-
-  // async componentDidMount() {
-  //   const dataToken = JSON.parse(localStorage.getItem("dataToken"));
-  //   const token = "Bearer " + dataToken.jwt;
-  //   console.log("asd");
-  //   console.log(token);
-
-  //   const response = await fetch("/api/categories", {
-  //     method: "GET",
-  //     headers: new Headers({
-  //       Authorization: token,
-  //     }),
-  //   });
-  //   const body = await response.json();
-  //   this.setState({ categories: body, isLoading: false });
-  // }
 
   changeFormMethod(method) {
     this.setState({ formMethod: method });
@@ -101,16 +88,14 @@ class Category extends Component {
   async handleSubmit(event, method) {
     event.preventDefault();
     const categoryItem = this.state.categoryItem;
-
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    };
+    const dataToken = JSON.parse(localStorage.getItem("dataToken"));
 
     //Change Check POST to PUT method for edit!!!
 
     await axios
-      .post("/api/categories", categoryItem, headers)
+      .post("/api/categories", categoryItem, {
+        headers: { Authorization: `Bearer ${dataToken.jwt}` },
+      })
       .then(() => {
         this.getCategories();
         this.hideModal();
@@ -136,17 +121,18 @@ class Category extends Component {
   }
 
   async remove(id) {
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    };
+    const dataToken = JSON.parse(localStorage.getItem("dataToken"));
 
-    await axios.delete("/api/categories/" + id, headers).then(() => {
-      let updatedCategories = [...this.state.categories].filter(
-        (cat) => cat.id !== id
-      );
-      this.setState({ categories: updatedCategories });
-    });
+    await axios
+      .delete("/api/categories/" + id, {
+        headers: { Authorization: `Bearer ${dataToken.jwt}` },
+      })
+      .then(() => {
+        let updatedCategories = [...this.state.categories].filter(
+          (cat) => cat.id !== id
+        );
+        this.setState({ categories: updatedCategories });
+      });
   }
 
   render() {

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from "axios";
 
 class Home extends Component {
   constructor(props) {
@@ -42,29 +43,17 @@ class Home extends Component {
       password: password,
     };
     console.log(JSON.stringify(credentials));
-    await fetch("/authenticate", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    })
-      .then(async (response) => {
-        const data = await response.json();
 
-        console.log(data.jwt);
-        if (!response.ok) {
-          const error = data.message;
-          console.log("Response is not OK....");
-          return Promise.reject(error);
+    await axios
+      .post("/authenticate", { username, password })
+      .then((response) => {
+        if (response.data.jwt) {
+          localStorage.setItem("dataToken", JSON.stringify(response.data));
+          console.log("OK");
+          console.log(JSON.parse(localStorage.getItem("dataToken")));
         }
 
-        localStorage.setItem("dataToken", JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        this.setState({ errorMessage: error.toString() });
-        console.error("There was an error!", error);
+        return response.data;
       });
   }
 
