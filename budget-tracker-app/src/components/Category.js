@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
+import CategoryService from "../services/CategoryService";
 
 class Category extends Component {
   exampleCategoryItem = {
@@ -29,17 +29,79 @@ class Category extends Component {
     this.hideModal = this.hideModal.bind(this);
   }
 
-  async getCategories() {
-    const dataToken = JSON.parse(localStorage.getItem("dataToken"));
-    const response = await axios.get(`/api/categories`, {
-      headers: { Authorization: `Bearer ${dataToken.jwt}` },
-    });
-    const body = response.data;
-    this.setState({ categories: body, isLoading: false });
-  }
-
   async componentDidMount() {
     this.getCategories();
+  }
+
+  async getCategories() {
+    CategoryService.getCategories().then((response) => {
+      const body = response.data;
+      this.setState({ categories: body, isLoading: false });
+    });
+  }
+  async handleSubmit(event, method) {
+    event.preventDefault();
+    const categoryItem = this.state.categoryItem;
+
+    //Refactor code to avoid  dupli
+    if (method === "POST") {
+      CategoryService.addCategory(categoryItem)
+        .then(() => {
+          this.getCategories();
+          this.hideModal();
+          this.clearFieldsAndErrors();
+        })
+        .catch((error) => {
+          if (error.response) {
+            const errorMessage = error.response.data.message;
+            const errorDetails = error.response.data.details;
+            this.setState({
+              errorMessageCategoryName: errorDetails[0].message,
+            });
+            this.setState({ errorMessage: errorMessage.toString() });
+          }
+          this.setState({ errorMessage: error.toString() });
+          console.error("There was an error!", error);
+        });
+    } else if (method === "PUT") {
+      CategoryService.updateCategory(categoryItem)
+        .then(() => {
+          this.getCategories();
+          this.hideModal();
+          this.clearFieldsAndErrors();
+        })
+        .catch((error) => {
+          if (error.response) {
+            const errorMessage = error.response.data.message;
+            const errorDetails = error.response.data.details;
+            this.setState({
+              errorMessageCategoryName: errorDetails[0].message,
+            });
+            this.setState({ errorMessage: errorMessage.toString() });
+          }
+          this.setState({ errorMessage: error.toString() });
+          console.error("There was an error!", error);
+        });
+    }
+  }
+
+  async remove(id) {
+    CategoryService.deleteCategory(id).then(() => {
+      let updatedCategories = [...this.state.categories].filter(
+        (cat) => cat.id !== id
+      );
+      this.setState({ categories: updatedCategories });
+    });
+  }
+
+  //Utils
+  handleChange(event) {
+    const target = event.target;
+    const value = target.value;
+    const name = target.name;
+    let categoryItem = { ...this.state.categoryItem };
+    categoryItem[name] = value;
+    this.setState({ categoryItem });
   }
 
   changeFormMethod(method) {
@@ -64,7 +126,6 @@ class Category extends Component {
     document.body.removeChild(backdrop);
   };
 
-  // MAnuallyyyyy clear state and input fields
   clearFieldsAndErrors = () => {
     this.setState({
       errorMessage: "",
@@ -76,63 +137,11 @@ class Category extends Component {
     });
   };
 
-  handleChange(event) {
-    const target = event.target;
-    const value = target.value;
-    const name = target.name;
-    let categoryItem = { ...this.state.categoryItem };
-    categoryItem[name] = value;
-    this.setState({ categoryItem });
-  }
-
-  async handleSubmit(event, method) {
-    event.preventDefault();
-    const categoryItem = this.state.categoryItem;
-    const dataToken = JSON.parse(localStorage.getItem("dataToken"));
-
-    //Change Check POST to PUT method for edit!!!
-
-    await axios
-      .post("/api/categories", categoryItem, {
-        headers: { Authorization: `Bearer ${dataToken.jwt}` },
-      })
-      .then(() => {
-        this.getCategories();
-        this.hideModal();
-        this.clearFieldsAndErrors();
-      })
-      .catch((error) => {
-        if (error.response) {
-          const errorMessage = error.response.data.message;
-          const errorDetails = error.response.data.details;
-          this.setState({ errorMessageCategoryName: errorDetails[0].message });
-          this.setState({ errorMessage: errorMessage.toString() });
-        }
-        this.setState({ errorMessage: error.toString() });
-        console.error("There was an error!", error);
-      });
-  }
-
   passCategory(id, name) {
     let categoryItem = { ...this.state.categoryItem };
     categoryItem.id = id;
     categoryItem.name = name;
     this.setState({ categoryItem });
-  }
-
-  async remove(id) {
-    const dataToken = JSON.parse(localStorage.getItem("dataToken"));
-
-    await axios
-      .delete("/api/categories/" + id, {
-        headers: { Authorization: `Bearer ${dataToken.jwt}` },
-      })
-      .then(() => {
-        let updatedCategories = [...this.state.categories].filter(
-          (cat) => cat.id !== id
-        );
-        this.setState({ categories: updatedCategories });
-      });
   }
 
   render() {
@@ -141,9 +150,6 @@ class Category extends Component {
 
     if (isLoading) return <Loader />;
 
-    {
-      /* Categories row */
-    }
     let categoriesList = categories.map((category) => (
       <tr key={category.id}>
         <td>{category.name}</td>
