@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
 
 class Category extends Component {
   exampleCategoryItem = {
@@ -28,11 +29,31 @@ class Category extends Component {
     this.hideModal = this.hideModal.bind(this);
   }
 
-  async componentDidMount() {
-    const response = await fetch("/api/categories");
-    const body = await response.json();
+  async getCategories() {
+    const response = await axios.get(`/api/categories`);
+    const body = response.data;
     this.setState({ categories: body, isLoading: false });
   }
+
+  async componentDidMount() {
+    this.getCategories();
+  }
+
+  // async componentDidMount() {
+  //   const dataToken = JSON.parse(localStorage.getItem("dataToken"));
+  //   const token = "Bearer " + dataToken.jwt;
+  //   console.log("asd");
+  //   console.log(token);
+
+  //   const response = await fetch("/api/categories", {
+  //     method: "GET",
+  //     headers: new Headers({
+  //       Authorization: token,
+  //     }),
+  //   });
+  //   const body = await response.json();
+  //   this.setState({ categories: body, isLoading: false });
+  // }
 
   changeFormMethod(method) {
     this.setState({ formMethod: method });
@@ -80,32 +101,28 @@ class Category extends Component {
   async handleSubmit(event, method) {
     event.preventDefault();
     const categoryItem = this.state.categoryItem;
-    await fetch("/api/categories", {
-      method: method,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(categoryItem),
-    })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-          const error = data.message;
-          const errorDetails = data.details;
-          this.setState({ errorMessageCategoryName: errorDetails[0].message });
-          return Promise.reject(error);
-        }
-        const GETresponse = await fetch("/api/categories");
-        const body = await GETresponse.json();
-        this.setState({
-          categories: body,
-          isLoading: false,
-        });
+
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    //Change Check POST to PUT method for edit!!!
+
+    await axios
+      .post("/api/categories", categoryItem, headers)
+      .then(() => {
+        this.getCategories();
         this.hideModal();
         this.clearFieldsAndErrors();
       })
       .catch((error) => {
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          const errorDetails = error.response.data.details;
+          this.setState({ errorMessageCategoryName: errorDetails[0].message });
+          this.setState({ errorMessage: errorMessage.toString() });
+        }
         this.setState({ errorMessage: error.toString() });
         console.error("There was an error!", error);
       });
@@ -119,13 +136,12 @@ class Category extends Component {
   }
 
   async remove(id) {
-    await fetch("/api/categories/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }).then(() => {
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+
+    await axios.delete("/api/categories/" + id, headers).then(() => {
       let updatedCategories = [...this.state.categories].filter(
         (cat) => cat.id !== id
       );

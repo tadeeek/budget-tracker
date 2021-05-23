@@ -52,14 +52,15 @@ class Home extends Component {
     })
       .then(async (response) => {
         const data = await response.json();
-        console.log(data);
-        let token = data.token;
+
+        console.log(data.jwt);
         if (!response.ok) {
           const error = data.message;
           console.log("Response is not OK....");
           return Promise.reject(error);
         }
-        localStorage.setItem("jwtToken", token);
+
+        localStorage.setItem("dataToken", JSON.stringify(response.data));
       })
       .catch((error) => {
         this.setState({ errorMessage: error.toString() });
