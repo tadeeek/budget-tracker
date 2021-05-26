@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CategoryService from "../services/CategoryService";
 
 class Category extends Component {
-  exampleCategoryItem = {
+  initialCategoryItem = {
     id: null,
     name: "",
   };
@@ -15,7 +15,7 @@ class Category extends Component {
     this.state = {
       isLoading: true,
       categories: [],
-      categoryItem: this.exampleCategoryItem,
+      categoryItem: this.initialCategoryItem,
       showModal: false,
       formMethod: "PUT",
       errorMessage: "",
@@ -39,11 +39,13 @@ class Category extends Component {
       this.setState({ categories: body, isLoading: false });
     });
   }
+
   async handleSubmit(event, method) {
     event.preventDefault();
+    this.clearFieldsAndErrors();
     const categoryItem = this.state.categoryItem;
 
-    //Refactor code to avoid  dupli
+    //Refactor code to avoid code duplication
     if (method === "POST") {
       CategoryService.addCategory(categoryItem)
         .then(() => {
