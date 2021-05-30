@@ -4,18 +4,20 @@ import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
 import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ExpensesService from "../services/ExpensesService";
+import CategoryService from "../services/CategoryService";
 
 class Expenses extends Component {
   currentDate = new Date();
 
-  examplePost = {
+  initialExpenseItem = {
     id: "",
     expenseDate: this.currentDate,
     description: "",
     location: "",
     price: 0.0,
     category: {
-      id: 4,
+      id: 1,
     },
   };
 
@@ -27,9 +29,9 @@ class Expenses extends Component {
       expenses: [],
       categories: [],
       date: this.currentDate,
-      post: this.examplePost,
+      expenseItem: this.initialExpenseItem,
       showModal: false,
-      formMethod: "PUT",
+      formMethod: "POST",
       errorMessage: "",
       errorMessageDescription: "",
       errorMessageLocation: "",
@@ -46,15 +48,148 @@ class Expenses extends Component {
   }
 
   async componentDidMount() {
-    const responseCat = await fetch("/api/categories");
-    const bodyCat = await responseCat.json();
-    this.setState({ categories: bodyCat, isLoading: false });
-
-    const responseExp = await fetch("/api/expenses");
-    const bodyExp = await responseExp.json();
-    this.setState({ expenses: bodyExp, isLoading: false });
+    this.getExpenses();
+    this.getCategories();
   }
 
+  async getExpenses() {
+    ExpensesService.getExpenses().then((response) => {
+      const expenses = response.data;
+      this.setState({ expenses: expenses, isLoading: false });
+    });
+  }
+
+  async getCategories() {
+    CategoryService.getCategories().then((response) => {
+      const categories = response.data;
+
+      //Set first category as first value for form
+      if (categories.length > 0) {
+        this.setState((tempState) => ({
+          ...tempState,
+          expenseItem: {
+            ...tempState.expenseItem,
+            category: {
+              ...tempState.expenseItem.categories,
+              id: categories[0].id,
+            },
+          },
+        }));
+      }
+
+      this.setState({ categories: categories, isLoading: false });
+    });
+  }
+  async handleSubmit(event, method) {
+    event.preventDefault();
+    this.clearFieldsAndErrors();
+    const expenseItem = this.state.expenseItem;
+
+    //Refactor code to avoid code duplication
+    if (method === "POST") {
+      ExpensesService.addExpense(expenseItem)
+        .then(() => {
+          this.getExpenses();
+          this.hideModal();
+          this.clearFieldsAndErrors();
+        })
+        .catch((error) => {
+          if (error.response) {
+            const errorMessage = error.response.data.message;
+            const errorDetails = error.response.data.details;
+            for (let i = 0; i < errorDetails.length; i++) {
+              console.log(errorDetails[i]);
+              switch (errorDetails[i].object) {
+                case "description":
+                  this.setState({
+                    errorMessageDescription: errorDetails[i].message,
+                  });
+                  break;
+                case "location":
+                  this.setState({
+                    errorMessageLocation: errorDetails[i].message,
+                  });
+                  break;
+                case "price":
+                  this.setState({
+                    errorMessagePrice: errorDetails[i].message,
+                  });
+                  break;
+                default:
+              }
+            }
+
+            return Promise.reject(errorMessage);
+          }
+          this.setState({ errorMessage: error.toString() });
+          console.error("There was an error!", error);
+        });
+    } else if (method === "PUT") {
+      ExpensesService.updateExpense(expenseItem)
+        .then(() => {
+          this.getExpenses();
+          this.hideModal();
+          this.clearFieldsAndErrors();
+        })
+        .catch((error) => {
+          if (error.response) {
+            const errorMessage = error.response.data.message;
+            const errorDetails = error.response.data.details;
+            for (let i = 0; i < errorDetails.length; i++) {
+              console.log(errorDetails[i]);
+              switch (errorDetails[i].object) {
+                case "description":
+                  this.setState({
+                    errorMessageDescription: errorDetails[i].message,
+                  });
+                  break;
+                case "location":
+                  this.setState({
+                    errorMessageLocation: errorDetails[i].message,
+                  });
+                  break;
+                case "price":
+                  this.setState({
+                    errorMessagePrice: errorDetails[i].message,
+                  });
+                  break;
+                default:
+              }
+            }
+
+            return Promise.reject(errorMessage);
+          }
+          this.setState({ errorMessage: error.toString() });
+          console.error("There was an error!", error);
+        });
+    }
+  }
+
+  // async remove(id) {
+  //   await fetch("/api/expenses/" + id, {
+  //     method: "DELETE",
+  //     headers: {
+  //       Accept: "application/json",
+  //       "Content-Type": "application/json",
+  //     },
+  //   }).then(() => {
+  //     let updatedExpenses = [...this.state.expenses].filter(
+  //       (exp) => exp.id !== id
+  //     );
+  //     this.setState({ expenses: updatedExpenses });
+  //   });
+  // }
+
+  async remove(id) {
+    ExpensesService.deleteExpense(id).then(() => {
+      let updatedExpenses = [...this.state.expenses].filter(
+        (exp) => exp.id !== id
+      );
+      this.setState({ expenses: updatedExpenses });
+    });
+  }
+
+  // Utils
   changeFormMethod(method) {
     this.setState({ formMethod: method });
   }
@@ -75,65 +210,6 @@ class Expenses extends Component {
     document.body.removeChild(backdrop);
   };
 
-  async handleSubmit(event, method) {
-    event.preventDefault();
-    this.clearFieldsAndErrors();
-
-    const post = this.state.post;
-    await fetch("/api/expenses", {
-      method: method,
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(post),
-    })
-      .then(async (response) => {
-        const data = await response.json();
-        if (!response.ok) {
-          const error = data.message;
-          const errorDetails = data.details;
-
-          for (let i = 0; i < errorDetails.length; i++) {
-            console.log(errorDetails[i]);
-            switch (errorDetails[i].object) {
-              case "description":
-                this.setState({
-                  errorMessageDescription: errorDetails[i].message,
-                });
-                break;
-              case "location":
-                this.setState({
-                  errorMessageLocation: errorDetails[i].message,
-                });
-                break;
-              case "price":
-                this.setState({
-                  errorMessagePrice: errorDetails[i].message,
-                });
-                break;
-              default:
-            }
-          }
-
-          return Promise.reject(error);
-        }
-        const GETresponse = await fetch("/api/expenses");
-        const body = await GETresponse.json();
-
-        this.setState({
-          expenses: body,
-          isLoading: false,
-        });
-        this.hideModal();
-        this.clearFieldsAndErrors();
-      })
-      .catch((error) => {
-        this.setState({ errorMessage: error.toString() });
-        console.error("There was an error!", error);
-      });
-  }
-
   // MAnuallyyyyy clear state and input fields
   clearFieldsAndErrors = () => {
     this.setState({
@@ -141,14 +217,14 @@ class Expenses extends Component {
       errorMessageDescription: "",
       errorMessageLocation: "",
       errorMessagePrice: "",
-      post: {
+      expenseItem: {
         id: null,
         expenseDate: this.currentDate,
         description: "",
         location: "",
         price: 0,
         category: {
-          id: 4,
+          id: this.state.expenseItem.category.id,
         },
       },
     });
@@ -158,51 +234,36 @@ class Expenses extends Component {
     const target = event.target;
     const value = target.value;
     const name = target.name;
-    let post = { ...this.state.post };
-    post[name] = value;
-    this.setState({ post });
+    let expenseItem = { ...this.state.expenseItem };
+    expenseItem[name] = value;
+    this.setState({ expenseItem });
   }
 
   handleChangeCat(event) {
     const target = event.target;
     const value = target.value;
-    let post = { ...this.state.post };
-    post.category.id = value;
-    this.setState({ post });
+    let expenseItem = { ...this.state.expenseItem };
+    expenseItem.category.id = value;
+    this.setState({ expenseItem });
   }
 
   handleDateChange(date) {
-    let post = { ...this.state.post };
-    post.expenseDate = date;
-    this.setState({ post });
+    let expenseItem = { ...this.state.expenseItem };
+    expenseItem.expenseDate = date;
+    this.setState({ expenseItem });
   }
 
   passExpense(id, expDate, description, location, categoryId, price) {
-    let post = { ...this.state.post };
-    post.id = id;
+    let expenseItem = { ...this.state.expenseItem };
+    expenseItem.id = id;
     //convert date from server
     let utcDate = expDate;
-    post.expenseDate = new Date(utcDate);
-    post.description = description;
-    post.category.id = categoryId;
-    post.location = location;
-    post.price = price;
-    this.setState({ post });
-  }
-
-  async remove(id) {
-    await fetch("/api/expenses/" + id, {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    }).then(() => {
-      let updatedExpenses = [...this.state.expenses].filter(
-        (exp) => exp.id !== id
-      );
-      this.setState({ expenses: updatedExpenses });
-    });
+    expenseItem.expenseDate = new Date(utcDate);
+    expenseItem.description = description;
+    expenseItem.category.id = categoryId;
+    expenseItem.location = location;
+    expenseItem.price = price;
+    this.setState({ expenseItem });
   }
 
   render() {
@@ -303,7 +364,7 @@ class Expenses extends Component {
                       Date
                     </label>
                     <DatePicker
-                      selected={this.state.post.expenseDate}
+                      selected={this.state.expenseItem.expenseDate}
                       dateFormat="yyyy/MM/dd"
                       onChange={this.handleDateChange}
                       className="form-control"
@@ -322,7 +383,7 @@ class Expenses extends Component {
                       id="description"
                       className="form-control"
                       onChange={this.handleChange}
-                      value={this.state.post.description}
+                      value={this.state.expenseItem.description}
                     />
                   </div>
                   <div className="mb-3">
@@ -338,7 +399,7 @@ class Expenses extends Component {
                       id="location"
                       className="form-control"
                       onChange={this.handleChange}
-                      value={this.state.post.location}
+                      value={this.state.expenseItem.location}
                     />
                   </div>
                   <div className="mb-3">
@@ -351,7 +412,7 @@ class Expenses extends Component {
                       id="category"
                       name="category"
                       onChange={this.handleChangeCat}
-                      value={this.state.post.category.id}
+                      value={this.state.expenseItem.category.id}
                     >
                       {categoriesList}
                     </select>
@@ -372,7 +433,7 @@ class Expenses extends Component {
                       id="price"
                       className="form-control"
                       onChange={this.handleChange}
-                      value={this.state.post.price}
+                      value={this.state.expenseItem.price}
                     />
                   </div>
                 </div>
@@ -449,7 +510,9 @@ class Expenses extends Component {
                 <span className="fw-bold">Total:</span>
               </td>
               <td className="table-align-right">
-                <span className="fw-bold">{expensesTotal}</span>
+                <span className="fw-bold">
+                  {(Math.round(expensesTotal * 100) / 100).toFixed(2)}
+                </span>
               </td>
               <td></td>
             </tr>
