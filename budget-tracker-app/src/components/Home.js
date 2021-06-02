@@ -4,13 +4,18 @@ import axios from "axios";
 class Home extends Component {
   constructor(props) {
     super(props);
-    this.state = this.initialState;
+
+    this.state = {
+      username: "",
+      password: "",
+      errorMessage: "",
+    };
   }
 
   initialState = {
     username: "",
     password: "",
-    errorMessage: "",
+    // errorMessage: "",
   };
 
   credentialsChange = (event) => {
@@ -45,15 +50,25 @@ class Home extends Component {
     console.log(JSON.stringify(credentials));
 
     await axios
-      .post("/authenticate", { username, password })
+      .post("http://localhost:8080/authenticate", { username, password })
       .then((response) => {
         if (response.data.jwt) {
           localStorage.setItem("dataToken", JSON.stringify(response.data));
           console.log("OK");
           console.log(JSON.parse(localStorage.getItem("dataToken")));
         }
-
         return response.data;
+      })
+      .catch((error) => {
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          console.log(errorMessage);
+          this.setState({ errorMessage: errorMessage.toString() });
+        }
+        setTimeout(() => {
+          this.credentialsReset();
+        }, 600);
+        console.error("There was an error!", error);
       });
   }
 
@@ -67,6 +82,7 @@ class Home extends Component {
             <p>
               My first simple: JAVA, Spring, React and Boostrap application.
             </p>
+
             <div className="home-signin text-center">
               <form>
                 <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
@@ -98,6 +114,10 @@ class Home extends Component {
                   name="password"
                   onChange={this.credentialsChange}
                 />
+                <span className="text-danger text-bold">
+                  {this.state.errorMessage}
+                </span>
+
                 <div class="checkbox mb-3">
                   <label>
                     <input type="checkbox" value="remember-me" /> Remember me

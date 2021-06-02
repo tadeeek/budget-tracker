@@ -1,5 +1,7 @@
 package com.tadeeek.budgettracker.demo.security;
 
+import java.util.Arrays;
+
 import com.tadeeek.budgettracker.demo.filters.JwtRequestFilter;
 import com.tadeeek.budgettracker.demo.service.MyUserDetailsService;
 
@@ -41,11 +43,13 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable()
                 // Allow
-                .authorizeRequests().antMatchers("/authenticate", "/", "/api/expenses/**").permitAll()
+                .authorizeRequests().antMatchers("/authenticate", "/").permitAll()
                 // Other request need to be authenticated
                 .anyRequest().authenticated().and()
+                // exceptions
+                .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 // stateless session.
-                .exceptionHandling().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
     }

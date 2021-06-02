@@ -46,7 +46,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         }
         ApiError apiException = new ApiError(ZonedDateTime.now(), badRequest, ex.getMessage(), details);
 
-        return new ResponseEntity(apiException, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(apiException, badRequest);
     }
 
     // Invalid data format
@@ -59,7 +59,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         ApiError apiException = new ApiError(ZonedDateTime.now(), badRequest, error);
 
-        return new ResponseEntity(apiException, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(apiException, badRequest);
     }
 
     // }

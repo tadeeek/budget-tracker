@@ -1,7 +1,7 @@
 import axios from "axios";
 import authorizationHeader from "./Authorization.header";
 
-const apiURL = "/api/categories/";
+const apiURL = "http://localhost:8080/api/categories/";
 
 class CategoryService {
   getCategories() {
