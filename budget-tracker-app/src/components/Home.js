@@ -1,79 +1,8 @@
 import React, { Component } from "react";
-import axios from "axios";
+import LoginForm from "./LoginForm";
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      username: "",
-      password: "",
-      errorMessage: "",
-    };
-  }
-
-  initialState = {
-    username: "",
-    password: "",
-    // errorMessage: "",
-  };
-
-  credentialsChange = (event) => {
-    this.setState({
-      [event.target.name]: event.target.value,
-    });
-    console.log(this.state);
-  };
-
-  credentialsReset = () => {
-    this.setState(() => this.initialState);
-  };
-
-  validateUser = (event) => {
-    event.preventDefault();
-    this.authenticateUser(this.state.username, this.state.password);
-    // setTimeout(() => {
-    //   if ("jest zalogowany") {
-    //     costam
-    //   } else {
-    //     this.credentialsReset();
-    //     this.setState({ errorMessage: "Invalid username or password" });
-    //   }
-    // }, 600);
-  };
-
-  async authenticateUser(username, password) {
-    const credentials = {
-      username: username,
-      password: password,
-    };
-    console.log(JSON.stringify(credentials));
-
-    await axios
-      .post("http://localhost:8080/authenticate", { username, password })
-      .then((response) => {
-        if (response.data.jwt) {
-          localStorage.setItem("dataToken", JSON.stringify(response.data));
-          console.log("OK");
-          console.log(JSON.parse(localStorage.getItem("dataToken")));
-        }
-        return response.data;
-      })
-      .catch((error) => {
-        if (error.response) {
-          const errorMessage = error.response.data.message;
-          console.log(errorMessage);
-          this.setState({ errorMessage: errorMessage.toString() });
-        }
-        setTimeout(() => {
-          this.credentialsReset();
-        }, 600);
-        console.error("There was an error!", error);
-      });
-  }
-
   render() {
-    const { username, password, errorMessage } = this.state;
     return (
       <div className="home-bg min-vh-100">
         <div className="container">
@@ -82,57 +11,13 @@ class Home extends Component {
             <p>
               My first simple: JAVA, Spring, React and Boostrap application.
             </p>
-
-            <div className="home-signin text-center">
-              <form>
-                <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-                <label for="inputUserName" class="visually-hidden">
-                  User
-                </label>
-                <input
-                  type="text"
-                  id="inputUserName"
-                  class="form-control"
-                  placeholder="User"
-                  required=""
-                  autofocus=""
-                  value={username}
-                  name="username"
-                  onChange={this.credentialsChange}
-                />
-                <label for="inputPassword" class="visually-hidden">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  id="inputPassword"
-                  class="form-control"
-                  placeholder="Password"
-                  required=""
-                  value={password}
-                  type="password"
-                  name="password"
-                  onChange={this.credentialsChange}
-                />
-                <span className="text-danger text-bold">
-                  {this.state.errorMessage}
-                </span>
-
-                <div class="checkbox mb-3">
-                  <label>
-                    <input type="checkbox" value="remember-me" /> Remember me
-                  </label>
-                </div>
-                <button
-                  class="w-100 btn btn-lg btn-primary"
-                  type="submit"
-                  onClick={this.validateUser}
-                >
-                  Sign in
-                </button>
-                <p class="mt-5 mb-3 text-muted">©2021</p>
-              </form>
-            </div>
+            {console.log(JSON.parse(localStorage.getItem("dataToken")))}
+            {this.props.isLoggedInStatus ? (
+              "You are logged in."
+            ) : (
+              <LoginForm isLoggedIn={this.props.isLoggedIn} />
+            )}
+            <p className="mt-5 mb-3 text-muted">©2021</p>
           </div>
         </div>
       </div>

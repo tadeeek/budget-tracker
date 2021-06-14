@@ -299,7 +299,7 @@ class Expenses extends Component {
         <td className="table-align-center">
           <button
             type="button"
-            class="btn btn-outline-danger btn-sm"
+            className="btn btn-outline-danger btn-sm"
             onClick={() => this.remove(exp.id)}
             title="Delete expense"
           >
@@ -437,7 +437,7 @@ class Expenses extends Component {
                     />
                   </div>
                 </div>
-                <div class="modal-footer">
+                <div className="modal-footer">
                   <button
                     type="button"
                     className="btn btn-secondary"

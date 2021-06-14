@@ -1,5 +1,5 @@
 import axios from "axios";
-import authorizationHeader from "./Authorization.header";
+import authorizationHeader from "./AuthorizationHeader";
 
 const apiURL = "http://localhost:8080/api/expenses/";
 
