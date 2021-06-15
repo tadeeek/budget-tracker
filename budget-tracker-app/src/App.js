@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Category from "./components/Category";
 import Expenses from "./components/Expenses";
+import Analysis from "./components/Analysis";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./components/Home";
 import NavApp from "./components/NavApp";
@@ -63,6 +64,7 @@ class App extends Component {
             </Route>
             <Route path="/categories" exact={true} component={Category} />
             <Route path="/expenses" exact={true} component={Expenses} />
+            <Route path="/analysis" exact={true} component={Analysis} />
           </Switch>
         </Router>
       </React.Fragment>

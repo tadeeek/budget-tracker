@@ -15,6 +15,7 @@ const LoginForm = (props) => {
       },
       (error) => {
         const errorMessage = error.response.data.message;
+        //Getting error when server is off
         setErrorMessage(errorMessage);
         setUsername("");
         setPassword("");

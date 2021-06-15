@@ -50,6 +50,11 @@ class NavApp extends Component {
                       Expenses
                     </a>
                   </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="/analysis">
+                      Analysys
+                    </a>
+                  </li>
                 </>
               ) : null}
             </ul>
