@@ -165,21 +165,6 @@ class Expenses extends Component {
     }
   }
 
-  // async remove(id) {
-  //   await fetch("/api/expenses/" + id, {
-  //     method: "DELETE",
-  //     headers: {
-  //       Accept: "application/json",
-  //       "Content-Type": "application/json",
-  //     },
-  //   }).then(() => {
-  //     let updatedExpenses = [...this.state.expenses].filter(
-  //       (exp) => exp.id !== id
-  //     );
-  //     this.setState({ expenses: updatedExpenses });
-  //   });
-  // }
-
   async remove(id) {
     ExpensesService.deleteExpense(id).then(() => {
       let updatedExpenses = [...this.state.expenses].filter(
@@ -420,7 +405,7 @@ class Expenses extends Component {
 
                   <div className="mb-3">
                     <label htmlFor="price" className="form-label">
-                      Price{" "}
+                      Price [EUR]{" "}
                       <span className="text-danger">
                         {this.state.errorMessagePrice}
                       </span>
@@ -489,7 +474,7 @@ class Expenses extends Component {
                 style={{ width: 10 + "%" }}
                 className="table-align-right"
               >
-                Price
+                Price [EUR]
               </th>
               <th
                 scope="col"

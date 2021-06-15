@@ -52,7 +52,7 @@ class NavApp extends Component {
                   </li>
                   <li className="nav-item">
                     <a className="nav-link" href="/analysis">
-                      Analysys
+                      Analysis
                     </a>
                   </li>
                 </>
