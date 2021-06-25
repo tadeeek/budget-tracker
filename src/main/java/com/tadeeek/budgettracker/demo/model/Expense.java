@@ -1,6 +1,6 @@
 package com.tadeeek.budgettracker.demo.model;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,7 +26,7 @@ public class Expense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Instant expenseDate;
+    private LocalDate expenseDate;
 
     @NotEmpty(message = "Description should not be empty")
     @Size(max = 32, message = "Description is too long. Should have maximum 16 characters")

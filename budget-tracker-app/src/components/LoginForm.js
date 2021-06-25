@@ -56,7 +56,7 @@ const LoginForm = (props) => {
             name="password"
             onChange={(e) => setPassword(e.target.value)}
           />
-          <span className="text-danger text-bold">{errorMessage}</span>
+          <span className="text-danger fw-bold">{errorMessage}</span>
 
           <div className="checkbox mb-3">
             <label>
