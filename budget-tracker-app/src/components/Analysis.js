@@ -22,6 +22,7 @@ class Analysis extends Component {
       labelsExpensesByLocation: [],
       dataSetExpensesByLocation: [],
       dataSetTransactionsByLocation: [],
+      dataSetExpensesPerMonth: [],
       gradientRainbow: [],
       rangeErrorMessage: "",
     };
@@ -35,14 +36,8 @@ class Analysis extends Component {
     this.getExpenses();
   }
 
-  async getCategories() {
-    CategoryService.getCategories().then((response) => {
-      const categories = response.data;
-      //Getting ALL categories for labels
-      this.convertCategoriesIntoLabels(categories);
-    });
-  }
   //API
+
   async getExpenses() {
     ExpensesService.getExpenses().then((response) => {
       let expenses = response.data;
@@ -54,10 +49,11 @@ class Analysis extends Component {
     });
   }
 
-  resetRange(expenses) {
-    this.setState({
-      startDate: new Date(expenses[0].expenseDate),
-      endDate: new Date(expenses[expenses.length - 1].expenseDate),
+  async getCategories() {
+    CategoryService.getCategories().then((response) => {
+      const categories = response.data;
+      //Getting ALL categories for labels
+      this.convertCategoriesIntoLabels(categories);
     });
   }
 
@@ -65,43 +61,10 @@ class Analysis extends Component {
     this.generateExpensesPerCategoryChart(expenses);
     this.generateExpensesByLocationChart(expenses);
     this.generateNoTransactionsInLocationChart(expenses);
+    this.generateExpensesPerMonth(expenses);
   }
 
-  // handleDateChange(dates) {
-  //   const [startDate, endDate] = dates;
-  //   this.setState({ startDate: startDate });
-  //   this.setState({ endDate: endDate });
-
-  //   let expenses = this.filterExpensesByDate(
-  //     this.state.expenses,
-  //     this.state.startDate,
-  //     this.state.endDate
-  //   );
-  //   if (expenses.length <= 0) {
-  //     this.setState({
-  //       rangeErrorMessage:
-  //         "No data to display, please select new date range. Displaying charts for previous date range...",
-  //     });
-  //   } else {
-  //     this.generateCharts(expenses);
-  //     this.setState({
-  //       rangeErrorMessage: "",
-  //     });
-  //   }
-  // }
-
-  // handleEndDateChange(endDate) {
-  //   this.setState({ endDate: endDate }, () => {
-  //     console.log("Data state w callback" + this.state.endDate);
-  //   });
-  //   let expenses = this.filterExpensesByDate(
-  //     this.state.expenses,
-  //     this.state.startDate,
-  //     this.state.endDate
-  //   );
-  //   this.generateCharts(expenses);
-  // }
-
+  //Data handling
   handleStartDateChange(startDate) {
     this.setState({ startDate: startDate }, () => {
       let expenses = this.filterExpensesByDate(
@@ -154,15 +117,7 @@ class Analysis extends Component {
     });
   }
 
-  filterExpensesByDate(expenses, startDate, endDate) {
-    console.log(startDate);
-    console.log(endDate);
-    return expenses.filter((exp) => {
-      let date = new Date(exp.expenseDate).getTime();
-      return date >= startDate && date <= endDate;
-    });
-  }
-
+  //Utils
   sortExpensesByDate(expenses) {
     let newExpenses = expenses.sort(function (a, b) {
       let dateA = new Date(a.expenseDate);
@@ -172,10 +127,51 @@ class Analysis extends Component {
     return newExpenses;
   }
 
+  filterExpensesByDate(expenses, startDate, endDate) {
+    console.log(startDate);
+    console.log(endDate);
+    return expenses.filter((exp) => {
+      let date = new Date(exp.expenseDate).getTime();
+      return date >= startDate && date <= endDate;
+    });
+  }
+  resetRange(expenses) {
+    this.setState({
+      startDate: new Date(expenses[0].expenseDate),
+      endDate: new Date(expenses[expenses.length - 1].expenseDate),
+    });
+  }
+
   //Generating data for charts
+
+  generateExpensesPerMonth(expenses) {
+    const expenseMonthsArr = expenses.map((val) => {
+      let date = new Date(val.expenseDate);
+      return date.getMonth();
+    });
+    const expensePriceArr = expenses.map((val) => val.price);
+
+    //month to index, powstawiaj po prostu odpowiednie price w odpowiednie indexy ktore sa monthami i gotowe :)
+    console.log("expense");
+    console.log(expenses);
+    console.log("miesiace");
+    console.log(expenseMonthsArr);
+    console.log("ceny");
+    console.log(expensePriceArr);
+    const dataSetPriceArr = new Array(12).fill(0);
+    for (let i = 0; i < expenses.length; i++) {
+      let index = expenseMonthsArr[i];
+
+      // dataSetPriceArr[index] = expensePriceArr[i];
+      let sum = dataSetPriceArr[index] + expensePriceArr[i];
+      dataSetPriceArr[index] = sum;
+    }
+    console.log(dataSetPriceArr);
+    this.setState({ dataSetExpensesPerMonth: dataSetPriceArr });
+  }
+
   convertCategoriesIntoLabels(categories) {
     const categoriesArr = categories.map((val) => val.name);
-    console.log(categoriesArr);
     this.setState({ labelsExpensesPerCat: categoriesArr });
   }
 
@@ -196,17 +192,6 @@ class Analysis extends Component {
       }
     }
 
-    // for (let i = 0; i < expenseCategoryArr.length; i++) {
-    //   if (dataSetCategoryArr.includes(expenseCategoryArr[i])) {
-    //     let index = dataSetCategoryArr.indexOf(expenseCategoryArr[i]);
-    //     let sum = dataSetPriceArr[index] + expensePriceArr[i];
-    //     dataSetPriceArr[index] = sum;
-    //   } else {
-    //     dataSetCategoryArr.push(expenseCategoryArr[i]);
-    //     dataSetPriceArr.push(expensePriceArr[i]);
-    //   }
-    // }
-    // this.setState({ labelsExpensesPerCat: dataSetCategoryArr });
     this.setState({ dataSetExpensesPerCat: dataSetPriceArr });
   }
 
@@ -326,7 +311,7 @@ class Analysis extends Component {
         datasets: [
           {
             label: "Total expense [EUR]",
-            data: this.state.dataSetExpensesPerCat,
+            data: this.state.dataSetExpensesPerMonth,
             backgroundColor: gradient,
           },
         ],
