@@ -266,9 +266,9 @@ class Expenses extends Component {
       </option>
     ));
 
-    let expensesTotal = expenses.reduce(function (acc, obj) {
-      return acc + obj.price;
-    }, 0);
+    // let expensesTotal = expenses.reduce(function (acc, obj) {
+    //   return acc + obj.price;
+    // }, 0);
 
     let expensesList = expenses
       .sort(function (a, b) {
@@ -502,7 +502,7 @@ class Expenses extends Component {
               </td>
               <td className="table-align-right">
                 <span className="fw-bold">
-                  {(Math.round(expensesTotal * 100) / 100).toFixed(2)}
+                  {/* {(Math.round(expensesTotal * 100) / 100).toFixed(2)} */}
                 </span>
               </td>
               <td></td>

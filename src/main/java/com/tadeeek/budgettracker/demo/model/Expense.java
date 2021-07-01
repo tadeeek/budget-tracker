@@ -1,7 +1,10 @@
 package com.tadeeek.budgettracker.demo.model;
 
 import java.time.LocalDate;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -11,6 +14,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,6 +46,7 @@ public class Expense {
     private double price;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Category category;
 
     @JsonIgnore
