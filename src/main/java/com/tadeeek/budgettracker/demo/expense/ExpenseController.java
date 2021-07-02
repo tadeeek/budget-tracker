@@ -1,4 +1,4 @@
-package com.tadeeek.budgettracker.demo.controller;
+package com.tadeeek.budgettracker.demo.expense;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.validation.Valid;
-
-import com.tadeeek.budgettracker.demo.model.Expense;
-import com.tadeeek.budgettracker.demo.repository.ExpenseRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

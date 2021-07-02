@@ -1,6 +1,5 @@
-package com.tadeeek.budgettracker.demo.model;
+package com.tadeeek.budgettracker.demo.user;
 
-import javax.annotation.Generated;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

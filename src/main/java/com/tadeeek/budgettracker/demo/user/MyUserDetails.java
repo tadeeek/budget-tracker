@@ -1,4 +1,4 @@
-package com.tadeeek.budgettracker.demo.model;
+package com.tadeeek.budgettracker.demo.user;
 
 import java.util.Arrays;
 import java.util.Collection;

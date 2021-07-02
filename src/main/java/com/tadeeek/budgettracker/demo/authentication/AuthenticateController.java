@@ -1,8 +1,6 @@
-package com.tadeeek.budgettracker.demo.controller;
+package com.tadeeek.budgettracker.demo.authentication;
 
-import com.tadeeek.budgettracker.demo.model.AuthenticationRequest;
-import com.tadeeek.budgettracker.demo.model.AuthenticationResponse;
-import com.tadeeek.budgettracker.demo.service.MyUserDetailsService;
+import com.tadeeek.budgettracker.demo.user.MyUserDetailsService;
 import com.tadeeek.budgettracker.demo.util.JwtUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;

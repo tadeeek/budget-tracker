@@ -1,4 +1,4 @@
-package com.tadeeek.budgettracker.demo.model;
+package com.tadeeek.budgettracker.demo.authentication;
 
 public class AuthenticationResponse {
 

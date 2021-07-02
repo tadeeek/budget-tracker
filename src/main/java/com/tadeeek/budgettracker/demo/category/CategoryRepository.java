@@ -1,6 +1,4 @@
-package com.tadeeek.budgettracker.demo.repository;
-
-import com.tadeeek.budgettracker.demo.model.Category;
+package com.tadeeek.budgettracker.demo.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

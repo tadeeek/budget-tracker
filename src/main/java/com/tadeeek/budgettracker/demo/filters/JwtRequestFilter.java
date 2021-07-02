@@ -13,7 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.tadeeek.budgettracker.demo.service.MyUserDetailsService;
+import com.tadeeek.budgettracker.demo.user.MyUserDetailsService;
 import com.tadeeek.budgettracker.demo.util.JwtUtil;
 
 import java.io.IOException;

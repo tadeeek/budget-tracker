@@ -1,11 +1,6 @@
-package com.tadeeek.budgettracker.demo.service;
+package com.tadeeek.budgettracker.demo.user;
 
-import java.util.ArrayList;
 import java.util.Optional;
-
-import com.tadeeek.budgettracker.demo.model.MyUserDetails;
-import com.tadeeek.budgettracker.demo.model.User;
-import com.tadeeek.budgettracker.demo.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
