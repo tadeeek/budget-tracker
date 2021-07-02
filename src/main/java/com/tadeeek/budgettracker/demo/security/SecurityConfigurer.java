@@ -1,9 +1,7 @@
 package com.tadeeek.budgettracker.demo.security;
 
-import java.util.Arrays;
-
 import com.tadeeek.budgettracker.demo.filters.JwtRequestFilter;
-import com.tadeeek.budgettracker.demo.service.MyUserDetailsService;
+import com.tadeeek.budgettracker.demo.user.MyUserDetailsService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
