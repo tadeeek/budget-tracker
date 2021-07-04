@@ -1,19 +1,13 @@
 package com.tadeeek.budgettracker.demo.category;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
-import com.tadeeek.budgettracker.demo.expense.Expense;
-import com.tadeeek.budgettracker.demo.expense.ExpenseRepository;
-import com.tadeeek.budgettracker.demo.user.MyUserDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/")
 public class CategoryController {
-    private CategoryRepository categoryRepository;
+
+    private final CategoryRepository categoryRepository;
     // private ExpenseRepository expenseRepository;
 
     @Autowired

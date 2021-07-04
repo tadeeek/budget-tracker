@@ -17,10 +17,18 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
     private String userName;
     private String email;
     private String password;
     private String roles;
+
+    // @OneToMany(mappedBy = "expense", cascade = { CascadeType.PERSIST,
+    // CascadeType.MERGE, CascadeType.MERGE,
+    // CascadeType.DETACH })
+    // private List<Expense> expenses;
+
+    // @OneToMany(mappedBy = "category")
+    // private List<Category> categories = new ArrayList<>();
 
 }
