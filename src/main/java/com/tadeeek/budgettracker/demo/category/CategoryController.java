@@ -2,13 +2,10 @@ package com.tadeeek.budgettracker.demo.category;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
-import com.tadeeek.budgettracker.demo.user.MyUserDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
