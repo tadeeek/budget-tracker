@@ -1,9 +1,19 @@
 package com.tadeeek.budgettracker.demo.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+
+import com.tadeeek.budgettracker.demo.category.Category;
+import com.tadeeek.budgettracker.demo.expense.Expense;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,12 +33,11 @@ public class User {
     private String password;
     private String roles;
 
-    // @OneToMany(mappedBy = "expense", cascade = { CascadeType.PERSIST,
-    // CascadeType.MERGE, CascadeType.MERGE,
-    // CascadeType.DETACH })
-    // private List<Expense> expenses;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private List<Category> categories;
 
-    // @OneToMany(mappedBy = "category")
-    // private List<Category> categories = new ArrayList<>();
-
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private List<Expense> expenses;
 }

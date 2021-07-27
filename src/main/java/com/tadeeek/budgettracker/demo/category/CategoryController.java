@@ -2,12 +2,17 @@ package com.tadeeek.budgettracker.demo.category;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
+import com.tadeeek.budgettracker.demo.user.MyUserDetails;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/")
 public class CategoryController {
 
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
     private final CategoryRepository categoryRepository;
     // private ExpenseRepository expenseRepository;
 
@@ -32,7 +39,17 @@ public class CategoryController {
     }
 
     @GetMapping("/categories")
-    public List<Category> categories() {
+    public List<Category> categories(Authentication authentication) {
+
+        // in method : Authentication authentication
+
+        // MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+        // String username = myUserDetails.getUsername();
+        // List<Category> categories = categoryRepository.findAll();
+        // return categories.stream().filter(it ->
+        // it.getUser().getUserName().equals(username))
+        // .collect(Collectors.toList());
+
         // in method: Authentication authentication
         // MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         // String username = myUserDetails.getUsername();
@@ -40,6 +57,9 @@ public class CategoryController {
         // return expenses.stream().filter(it ->
         // it.getUser().getUserName().equals(username))
         // .map(expense -> expense.getCategory()).collect(Collectors.toList());
+
+        // return categories;
+
         return categoryRepository.findAll();
     }
 

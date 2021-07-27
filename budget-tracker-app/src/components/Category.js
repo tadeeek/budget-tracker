@@ -16,7 +16,9 @@ class Category extends Component {
       isLoading: true,
       categories: [],
       categoryItem: this.initialCategoryItem,
+      categoryId: 0,
       showModal: false,
+      showModalDelete: false,
       formMethod: "PUT",
       errorMessage: "",
       errorMessageCategoryName: "",
@@ -42,48 +44,53 @@ class Category extends Component {
 
   async handleSubmit(event, method) {
     event.preventDefault();
-    this.clearFieldsAndErrors();
-    const categoryItem = this.state.categoryItem;
 
-    //Refactor code to avoid code duplication
-    if (method === "POST") {
-      CategoryService.addCategory(categoryItem)
-        .then(() => {
-          this.getCategories();
-          this.hideModal();
-          this.clearFieldsAndErrors();
-        })
-        .catch((error) => {
-          if (error.response) {
-            const errorMessage = error.response.data.message;
-            const errorDetails = error.response.data.details;
-            this.setState({
-              errorMessageCategoryName: errorDetails[0].message,
-            });
-            this.setState({ errorMessage: errorMessage.toString() });
-          }
-          this.setState({ errorMessage: error.toString() });
-          console.error("There was an error!", error);
-        });
-    } else if (method === "PUT") {
-      CategoryService.updateCategory(categoryItem)
-        .then(() => {
-          this.getCategories();
-          this.hideModal();
-          this.clearFieldsAndErrors();
-        })
-        .catch((error) => {
-          if (error.response) {
-            const errorMessage = error.response.data.message;
-            const errorDetails = error.response.data.details;
-            this.setState({
-              errorMessageCategoryName: errorDetails[0].message,
-            });
-            this.setState({ errorMessage: errorMessage.toString() });
-          }
-          this.setState({ errorMessage: error.toString() });
-          console.error("There was an error!", error);
-        });
+    if (this.state.showModalDelete === true) {
+      this.remove(this.state.categoryId);
+    } else {
+      this.clearFieldsAndErrors();
+      const categoryItem = this.state.categoryItem;
+
+      //Refactor code to avoid code duplication
+      if (method === "POST") {
+        CategoryService.addCategory(categoryItem)
+          .then(() => {
+            this.getCategories();
+            this.hideModal();
+            this.clearFieldsAndErrors();
+          })
+          .catch((error) => {
+            if (error.response) {
+              const errorMessage = error.response.data.message;
+              const errorDetails = error.response.data.details;
+              this.setState({
+                errorMessageCategoryName: errorDetails[0].message,
+              });
+              this.setState({ errorMessage: errorMessage.toString() });
+            }
+            this.setState({ errorMessage: error.toString() });
+            console.error("There was an error!", error);
+          });
+      } else if (method === "PUT") {
+        CategoryService.updateCategory(categoryItem)
+          .then(() => {
+            this.getCategories();
+            this.hideModal();
+            this.clearFieldsAndErrors();
+          })
+          .catch((error) => {
+            if (error.response) {
+              const errorMessage = error.response.data.message;
+              const errorDetails = error.response.data.details;
+              this.setState({
+                errorMessageCategoryName: errorDetails[0].message,
+              });
+              this.setState({ errorMessage: errorMessage.toString() });
+            }
+            this.setState({ errorMessage: error.toString() });
+            console.error("There was an error!", error);
+          });
+      }
     }
   }
 
@@ -94,6 +101,7 @@ class Category extends Component {
       );
       this.setState({ categories: updatedCategories });
     });
+    this.hideModal2();
   }
 
   //Utils
@@ -107,19 +115,45 @@ class Category extends Component {
   }
 
   changeFormMethod(method) {
+    this.setState({ showModalDelete: false });
     this.setState({ formMethod: method });
   }
 
-  openModal = () => {
+  openModal(id) {
+    this.setState({
+      categoryId: id,
+    });
+
     document.body.classList.add("modal-open");
     this.setState({ showModal: true });
     var backdrop = document.createElement("div");
     backdrop.setAttribute("id", "modalBackdrop");
     backdrop.classList.add("modal-backdrop", "fade", "show");
     document.body.appendChild(backdrop);
-  };
+  }
 
   hideModal = () => {
+    document.body.classList.remove("modal-open");
+    this.setState({
+      showModal: false,
+    });
+    var backdrop = document.getElementById("modalBackdrop");
+    document.body.removeChild(backdrop);
+  };
+
+  openModal2(id) {
+    this.setState({
+      categoryId: id,
+    });
+    document.body.classList.add("modal-open");
+    this.setState({ showModal: true });
+    var backdrop = document.createElement("div");
+    backdrop.setAttribute("id", "modalBackdrop");
+    backdrop.classList.add("modal-backdrop", "fade", "show");
+    document.body.appendChild(backdrop);
+  }
+
+  hideModal2 = () => {
     document.body.classList.remove("modal-open");
     this.setState({
       showModal: false,
@@ -148,7 +182,8 @@ class Category extends Component {
 
   render() {
     const title = <h2>Categories</h2>;
-    const { categories, isLoading, showModal, formMethod } = this.state;
+    const { categories, isLoading, showModal, formMethod, showModalDelete } =
+      this.state;
 
     if (isLoading) return <Loader />;
 
@@ -159,7 +194,11 @@ class Category extends Component {
           <button
             type="button"
             className="btn btn-outline-danger btn-sm"
-            onClick={() => this.remove(category.id)}
+            onClick={() => {
+              this.openModal();
+              this.setState({ showModalDelete: true });
+              this.setState({ categoryId: category.id });
+            }}
             title="Delete category"
           >
             <FontAwesomeIcon icon="times" />
@@ -182,6 +221,7 @@ class Category extends Component {
 
     return (
       <div className="container pt-appnav">
+        {/* Add category modal */}
         <div
           className={"modal fade " + (showModal ? "show d-block" : "d-none")}
           id="categoryModal"
@@ -191,11 +231,12 @@ class Category extends Component {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5
-                  className="modal-title"
-                  id={"categoryModal" + this.state.formMethod + "Label"}
-                >
-                  {(formMethod === "PUT" ? "Edit" : "Add") + " category"}
+                <h5 className="modal-title">
+                  {showModalDelete
+                    ? "Delete category"
+                    : formMethod === "PUT"
+                    ? "Edit category"
+                    : "Add category"}
                 </h5>
                 <button
                   type="button"
@@ -210,24 +251,34 @@ class Category extends Component {
               <form
                 onSubmit={(e) => this.handleSubmit(e, this.state.formMethod)}
               >
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label htmlFor="description" className="form-label">
-                      Name{" "}
-                      <span className="text-danger">
-                        {this.state.errorMessageCategoryName}
-                      </span>
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      className="form-control"
-                      onChange={this.handleChange}
-                      value={this.state.categoryItem.name}
-                    />
+                {showModalDelete ? (
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      Deleting category will also remove ALL expenses with this
+                      category. Do you want to countinue?
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div className="modal-body">
+                    <div className="mb-3">
+                      <label htmlFor="description" className="form-label">
+                        Name{" "}
+                        <span className="text-danger">
+                          {this.state.errorMessageCategoryName}
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        className="form-control"
+                        onChange={this.handleChange}
+                        value={this.state.categoryItem.name}
+                      />
+                    </div>
+                  </div>
+                )}
+
                 <div className="modal-footer">
                   <button
                     type="button"
@@ -241,7 +292,7 @@ class Category extends Component {
                   </button>
 
                   <button className="btn btn-primary" type="submit">
-                    Submit
+                    {showModalDelete ? "Delete" : "Submit"}
                   </button>
                 </div>
               </form>
