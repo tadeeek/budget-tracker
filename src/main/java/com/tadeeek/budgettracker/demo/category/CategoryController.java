@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
+import com.tadeeek.budgettracker.demo.user.MyUserDetails;
+import com.tadeeek.budgettracker.demo.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -75,7 +77,16 @@ public class CategoryController {
     }
 
     @PostMapping("/categories")
-    public Category addCategory(@Valid @RequestBody Category category) {
+    public Category addCategory(@Valid @RequestBody Category category, Authentication authentication) {
+
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+
+        long userId = myUserDetails.getUserId();
+
+        User user = new User();
+        user.setUserId(userId);
+
+        category.setUser(user);
         categoryRepository.save(category);
 
         return category;

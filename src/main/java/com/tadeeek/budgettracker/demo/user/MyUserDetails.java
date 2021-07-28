@@ -11,11 +11,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class MyUserDetails implements UserDetails {
 
+    private long userId;
     private String userName;
     private String password;
     private List<GrantedAuthority> authorities;
 
     public MyUserDetails(User user) {
+        this.userId = user.getUserId();
         this.userName = user.getUserName();
         this.password = user.getPassword();
         this.authorities = Arrays.stream(user.getRoles().split(",")).map(SimpleGrantedAuthority::new)
@@ -55,6 +57,10 @@ public class MyUserDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public long getUserId() {
+        return this.userId;
     }
 
 }
