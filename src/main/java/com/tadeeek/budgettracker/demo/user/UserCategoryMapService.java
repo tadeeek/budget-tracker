@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.tadeeek.budgettracker.demo.category.Category;
+import com.tadeeek.budgettracker.demo.category.CategoryRepository;
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
 
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,9 @@ public class UserCategoryMapService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     private UserCategoryDTO convertToUserCategoryDTO(User user) {
         // Mapping fields
@@ -54,6 +58,21 @@ public class UserCategoryMapService {
         } else {
             return categories.get(0);
         }
+    }
+
+    public Category save(Category category, Authentication authentication) {
+
+        MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
+
+        long userId = myUserDetails.getUserId();
+
+        User user = new User();
+        user.setUserId(userId);
+
+        category.setUser(user);
+        categoryRepository.save(category);
+
+        return category;
     }
 
 }
