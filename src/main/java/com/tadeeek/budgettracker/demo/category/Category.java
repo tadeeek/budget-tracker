@@ -37,4 +37,9 @@ public class Category {
     @JsonIgnore
     private User user;
 
+    @Override
+    public String toString() {
+        return "{" + " id='" + getId() + "'" + ", name='" + getName() + "'" + ", user='" + getUser() + "'" + "}";
+    }
+
 }

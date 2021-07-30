@@ -1,6 +1,7 @@
 package com.tadeeek.budgettracker.demo.user;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.tadeeek.budgettracker.demo.category.Category;
@@ -18,11 +19,14 @@ public class UserCategoryMapService {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    public UserCategoryMapService(UserRepository userRepository, CategoryRepository categoryRepository) {
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
+    }
 
     private UserCategoryDTO convertToUserCategoryDTO(User user) {
         // Mapping fields
@@ -49,21 +53,18 @@ public class UserCategoryMapService {
     public Category getAllUserCategoryById(Long id, Authentication authentication) {
 
         // get user categories and find by id, and get first
-        // check for gettin 0 and fix error
         List<Category> categories = getAllUserCategory(authentication).getCategories().stream()
                 .filter(it -> it.getId().equals(id)).collect(Collectors.toList());
 
-        if (categories == null) {
+        if (categories.size() <= 0) {
             throw new ApiRequestException("Did not find category id - " + id);
-        } else {
-            return categories.get(0);
         }
+        return categories.get(0);
     }
 
-    public Category save(Category category, Authentication authentication) {
+    public Category saveCategory(Category category, Authentication authentication) {
 
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
-
         long userId = myUserDetails.getUserId();
 
         User user = new User();
@@ -75,4 +76,15 @@ public class UserCategoryMapService {
         return category;
     }
 
+    public void deleteCategory(Long id, Authentication authentication) {
+
+        Optional<Category> category = categoryRepository.findById(id);
+
+        if (category.isPresent()) {
+            categoryRepository.deleteById(id);
+        } else {
+            throw new ApiRequestException("Did not find category id - " + id);
+        }
+
+    }
 }

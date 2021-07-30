@@ -3,13 +3,13 @@ package com.tadeeek.budgettracker.demo.user;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Optional;
-
 import javax.validation.Valid;
 
 import com.tadeeek.budgettracker.demo.category.Category;
+import com.tadeeek.budgettracker.demo.category.CategoryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +24,13 @@ public class UserCategoryMapController {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    @Autowired
     private UserCategoryMapService userCategoryMapService;
+
+    @Autowired
+    public UserCategoryMapController(UserCategoryMapService userCategoryMapService) {
+        this.userCategoryMapService = userCategoryMapService;
+
+    }
 
     @GetMapping("/categories")
     public UserCategoryDTO getAllUserCategory(Authentication authentication) {
@@ -42,13 +47,21 @@ public class UserCategoryMapController {
     @PostMapping("/categories")
     public Category addCategory(@Valid @RequestBody Category category, Authentication authentication) {
 
-        return userCategoryMapService.save(category, authentication);
+        return userCategoryMapService.saveCategory(category, authentication);
     }
 
     @PutMapping("/categories")
     public Category updateCategory(@Valid @RequestBody Category category, Authentication authentication) {
 
-        return userCategoryMapService.save(category, authentication);
+        return userCategoryMapService.saveCategory(category, authentication);
+    }
+
+    @DeleteMapping("/categories/{id}")
+    public String deleteCategory(@PathVariable Long id, Authentication authentication) {
+
+        userCategoryMapService.deleteCategory(id, authentication);
+
+        return "Category of id: " + id + " was deleted";
     }
 
 }

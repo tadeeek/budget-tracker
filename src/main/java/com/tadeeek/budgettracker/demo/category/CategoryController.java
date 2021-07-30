@@ -112,4 +112,5 @@ public class CategoryController {
 
         return "Category of id: " + id + " was deleted";
     }
+
 }
