@@ -1,12 +1,14 @@
-package com.tadeeek.budgettracker.demo.user;
+package com.tadeeek.budgettracker.demo.category;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.tadeeek.budgettracker.demo.category.Category;
-import com.tadeeek.budgettracker.demo.category.CategoryRepository;
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
+import com.tadeeek.budgettracker.demo.user.MyUserDetails;
+import com.tadeeek.budgettracker.demo.user.User;
+import com.tadeeek.budgettracker.demo.user.UserCategoryDTO;
+import com.tadeeek.budgettracker.demo.user.UserRepository;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserCategoryMapService {
+public class CategoryService {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -23,7 +25,7 @@ public class UserCategoryMapService {
     private final CategoryRepository categoryRepository;
 
     @Autowired
-    public UserCategoryMapService(UserRepository userRepository, CategoryRepository categoryRepository) {
+    public CategoryService(UserRepository userRepository, CategoryRepository categoryRepository) {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
     }
@@ -37,24 +39,23 @@ public class UserCategoryMapService {
         return userCategoryDTO;
     }
 
-    public UserCategoryDTO getAllUserCategory(Authentication authentication) {
+    public List<Category> getAllUserCategory(Authentication authentication) {
 
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         long userId = myUserDetails.getUserId();
 
         // get first and only user
-        UserCategoryDTO userCategoryDTO = ((List<User>) userRepository.findAll()).stream()
-                .map(this::convertToUserCategoryDTO).filter(it -> it.getUserId().equals(userId))
-                .collect(Collectors.toList()).get(0);
+        List<Category> categories = ((List<User>) userRepository.findAll()).stream().map(this::convertToUserCategoryDTO)
+                .filter(it -> it.getUserId().equals(userId)).collect(Collectors.toList()).get(0).getCategories();
 
-        return userCategoryDTO;
+        return categories;
     }
 
     public Category getAllUserCategoryById(Long id, Authentication authentication) {
 
         // get user categories and find by id, and get first
-        List<Category> categories = getAllUserCategory(authentication).getCategories().stream()
-                .filter(it -> it.getId().equals(id)).collect(Collectors.toList());
+        List<Category> categories = getAllUserCategory(authentication).stream().filter(it -> it.getId().equals(id))
+                .collect(Collectors.toList());
 
         if (categories.size() <= 0) {
             throw new ApiRequestException("Did not find category id - " + id);
