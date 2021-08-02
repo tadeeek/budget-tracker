@@ -1,15 +1,12 @@
 package com.tadeeek.budgettracker.demo.expense;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,43 +19,40 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class ExpenseController {
-    private ExpenseRepository expenseRepository;
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    private ExpenseService expenseService;
 
     @Autowired
-    public ExpenseController(ExpenseRepository expenseRepository) {
-
-        this.expenseRepository = expenseRepository;
+    public ExpenseController(ExpenseService expenseService) {
+        this.expenseService = expenseService;
     }
 
     @GetMapping("/expenses")
-    public List<Expense> getExpenses() {
-        return expenseRepository.findAll();
+    public List<Expense> getAllUserExpense(Authentication authentication) {
+        return expenseService.getAllUserExpense(authentication);
     }
 
     @GetMapping("/expenses/{id}")
-    public ResponseEntity<?> getExpensesById(@PathVariable Long id) {
-        Optional<Expense> expense = expenseRepository.findById(id);
-        return expense.map(res -> ResponseEntity.ok().body(res)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public Expense getAllUserExpensesById(@PathVariable Long id, Authentication authentication) {
+
+        return expenseService.getAllUserExpenseById(id, authentication);
     }
 
     @PostMapping("/expenses")
-    public ResponseEntity<Expense> addExpense(@Valid @RequestBody Expense expense) throws URISyntaxException {
-        Expense result = expenseRepository.save(expense);
-
-        return ResponseEntity.created(new URI("/api/expenses" + result.getExpenseId())).body(result);
+    public Expense addExpense(@Valid @RequestBody Expense expense, Authentication authentication) {
+        return expenseService.saveExpense(expense, authentication);
     }
 
     @PutMapping("/expenses")
-    public ResponseEntity<Expense> updateExpense(@Valid @RequestBody Expense expense) {
-        Expense result = expenseRepository.save(expense);
-
-        return ResponseEntity.ok().body(result);
+    public Expense updateExpense(@Valid @RequestBody Expense expense, Authentication authentication) {
+        return expenseService.saveExpense(expense, authentication);
     }
 
     @DeleteMapping("/expenses/{id}")
-    public ResponseEntity<?> deletExpense(@PathVariable Long id) {
-        expenseRepository.deleteById(id);
+    public String deletExpense(@PathVariable Long id, Authentication authentication) {
+        expenseService.deleteExpense(id, authentication);
 
-        return ResponseEntity.ok().build();
+        return "Expense of id: " + id + " was deleted";
     }
 }

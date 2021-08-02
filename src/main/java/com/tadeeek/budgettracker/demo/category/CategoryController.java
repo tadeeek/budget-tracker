@@ -23,42 +23,42 @@ public class CategoryController {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    private CategoryService userCategoryMapService;
+    private CategoryService categoryService;
 
     @Autowired
     public CategoryController(CategoryService userCategoryMapService) {
-        this.userCategoryMapService = userCategoryMapService;
+        this.categoryService = userCategoryMapService;
 
     }
 
     @GetMapping("/categories")
     public List<Category> getAllUserCategory(Authentication authentication) {
 
-        return userCategoryMapService.getAllUserCategory(authentication);
+        return categoryService.getAllUserCategory(authentication);
     };
 
     @GetMapping("/categories/{id}")
     public Category getAllUserCategoryById(@PathVariable Long id, Authentication authentication) {
 
-        return userCategoryMapService.getAllUserCategoryById(id, authentication);
+        return categoryService.getAllUserCategoryById(id, authentication);
     }
 
     @PostMapping("/categories")
     public Category addCategory(@Valid @RequestBody Category category, Authentication authentication) {
 
-        return userCategoryMapService.saveCategory(category, authentication);
+        return categoryService.saveCategory(category, authentication);
     }
 
     @PutMapping("/categories")
     public Category updateCategory(@Valid @RequestBody Category category, Authentication authentication) {
 
-        return userCategoryMapService.saveCategory(category, authentication);
+        return categoryService.saveCategory(category, authentication);
     }
 
     @DeleteMapping("/categories/{id}")
     public String deleteCategory(@PathVariable Long id, Authentication authentication) {
 
-        userCategoryMapService.deleteCategory(id, authentication);
+        categoryService.deleteCategory(id, authentication);
 
         return "Category of id: " + id + " was deleted";
     }

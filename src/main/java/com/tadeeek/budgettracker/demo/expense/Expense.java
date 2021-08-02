@@ -7,12 +7,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tadeeek.budgettracker.demo.category.Category;
+import com.tadeeek.budgettracker.demo.user.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +28,7 @@ public class Expense {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long expenseId;
+    private Long Id;
 
     private LocalDate expenseDate;
 
@@ -41,8 +43,13 @@ public class Expense {
     @Min(value = 0, message = "Price have to be greater than 0")
     private double price;
 
-    @OneToOne
-    @JoinColumn(name = "category_id")
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User user;
 
 }
