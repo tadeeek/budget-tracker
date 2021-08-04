@@ -8,12 +8,13 @@ class Home extends Component {
         <div className="container">
           <div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
             <h1>Welcome to Budget Tracker</h1>
+
             <p>
               My first simple: JAVA, Spring, React and Boostrap application.
             </p>
             {console.log(JSON.parse(localStorage.getItem("dataToken")))}
             {this.props.isLoggedInStatus ? (
-              "You are logged in."
+              "You are logged in. "
             ) : (
               <LoginForm isLoggedIn={this.props.isLoggedIn} />
             )}

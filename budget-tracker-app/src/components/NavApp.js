@@ -10,7 +10,7 @@ class NavApp extends Component {
 
   logout = () => {
     AuthorizationService.logout();
-    this.props.isLoggedIn(false);
+    this.props.isLoggedlIn(false);
   };
 
   render() {
@@ -60,11 +60,18 @@ class NavApp extends Component {
             </ul>
             <ul class="navbar-nav">
               {this.props.isLoggedInStatus ? (
-                <li className="nav-item">
-                  <a className="nav-link" href="/" onClick={this.logout}>
-                    Logout
-                  </a>
-                </li>
+                <>
+                  <li className="nav-item">
+                    <a className="nav-link" href="/account">
+                      Account
+                    </a>
+                  </li>
+                  <li className="nav-item">
+                    <a className="nav-link" href="/" onClick={this.logout}>
+                      Logout
+                    </a>
+                  </li>
+                </>
               ) : (
                 <>
                   <li className="nav-item">

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Account from "./components/Account";
 import Category from "./components/Category";
 import Expenses from "./components/Expenses";
 import Analysis from "./components/Analysis";
@@ -32,6 +33,13 @@ class App extends Component {
     }
   }
 
+  // async getUserDetails() {
+  //   UserService.getUserDetails().then((response) => {
+  //     let userDetails = response.data;
+  //     this.setState({ userDetails: userDetails });
+  //   });
+  // }
+
   setIsLoggedIn = (value) => {
     if (value) {
       const user = AuthorizationService.getAuthorizedUser();
@@ -60,11 +68,13 @@ class App extends Component {
               <Home
                 isLoggedIn={this.setIsLoggedIn}
                 isLoggedInStatus={this.state.isLoggedIn}
+                userDetails={this.state.userDetails}
               />
             </Route>
             <Route path="/categories" exact={true} component={Category} />
             <Route path="/expenses" exact={true} component={Expenses} />
             <Route path="/analysis" exact={true} component={Analysis} />
+            <Route path="/account" exact={true} component={Account} />
           </Switch>
         </Router>
       </React.Fragment>
