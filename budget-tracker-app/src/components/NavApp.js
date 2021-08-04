@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { NavLink } from "react-router-dom";
 import AuthorizationService from "../services/AuthorizationService";
 
 class NavApp extends Component {
@@ -34,26 +35,26 @@ class NavApp extends Component {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="/">
+                <NavLink to="/" exact={true} className="nav-link">
                   Home
-                </a>
+                </NavLink>
               </li>
               {this.props.isLoggedInStatus ? (
                 <>
                   <li className="nav-item">
-                    <a className="nav-link" href="/categories">
+                    <NavLink to="/categories" className="nav-link">
                       Categories
-                    </a>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="/expenses">
+                    <NavLink to="/expenses" className="nav-link">
                       Expenses
-                    </a>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="/analysis">
+                    <NavLink to="/analysis" className="nav-link">
                       Analysis
-                    </a>
+                    </NavLink>
                   </li>
                 </>
               ) : null}
@@ -62,9 +63,9 @@ class NavApp extends Component {
               {this.props.isLoggedInStatus ? (
                 <>
                   <li className="nav-item">
-                    <a className="nav-link" href="/account">
+                    <NavLink to="/account" className="nav-link">
                       Account
-                    </a>
+                    </NavLink>
                   </li>
                   <li className="nav-item">
                     <a className="nav-link" href="/" onClick={this.logout}>

@@ -57,12 +57,12 @@ class App extends Component {
 
   render() {
     return (
-      <React.Fragment>
-        <NavApp
-          isLoggedIn={this.setIsLoggedIn}
-          isLoggedInStatus={this.state.isLoggedIn}
-        />
-        <Router>
+      <Router>
+        <React.Fragment>
+          <NavApp
+            isLoggedIn={this.setIsLoggedIn}
+            isLoggedInStatus={this.state.isLoggedIn}
+          />
           <Switch>
             <Route path="/" exact={true}>
               <Home
@@ -71,13 +71,18 @@ class App extends Component {
                 userDetails={this.state.userDetails}
               />
             </Route>
-            <Route path="/categories" exact={true} component={Category} />
+            <Route
+              path="/categories"
+              exact={true}
+              exactly
+              component={Category}
+            />
             <Route path="/expenses" exact={true} component={Expenses} />
             <Route path="/analysis" exact={true} component={Analysis} />
             <Route path="/account" exact={true} component={Account} />
           </Switch>
-        </Router>
-      </React.Fragment>
+        </React.Fragment>
+      </Router>
     );
   }
 }
