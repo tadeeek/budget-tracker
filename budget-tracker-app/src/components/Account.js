@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import UserService from "../services/UserService";
 import { Switch, Redirect } from "react-router-dom";
+import userProfile from "../img/userprofile.png";
 
 class Account extends Component {
   constructor(props) {
@@ -51,6 +52,8 @@ class Account extends Component {
         <div className="container">
           <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
             <h2>Hello {name}!</h2>
+
+            <img src={userProfile} alt="user profile"></img>
             <h4>username: {userName}</h4>
             <h4>e-mail: {email}</h4>
           </div>
