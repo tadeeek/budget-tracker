@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Bar, Doughnut } from "react-chartjs-2";
+import { Switch, Redirect } from "react-router-dom";
 import CategoryService from "../services/CategoryService";
 import ExpensesService from "../services/ExpensesService";
 import DatePicker from "react-datepicker";
@@ -25,6 +26,8 @@ class Analysis extends Component {
       dataSetExpensesPerMonth: [],
       gradientRainbow: [],
       rangeErrorMessage: "",
+      errorOccured: false,
+      errorMessage: "",
     };
 
     this.handleStartDateChange = this.handleStartDateChange.bind(this);
@@ -39,22 +42,42 @@ class Analysis extends Component {
   //API
 
   async getExpenses() {
-    ExpensesService.getExpenses().then((response) => {
-      let expenses = response.data;
-      console.log(expenses);
-      expenses = this.sortExpensesByDate(expenses);
-      this.setState({ expenses: expenses });
-      this.resetRange(expenses);
-      this.generateCharts(this.state.expenses);
-    });
+    ExpensesService.getExpenses()
+      .then((response) => {
+        let expenses = response.data;
+        console.log(expenses);
+        expenses = this.sortExpensesByDate(expenses);
+        this.setState({ expenses: expenses });
+        this.resetRange(expenses);
+        this.generateCharts(this.state.expenses);
+      })
+      .catch((error) => {
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          console.error("FORBIDDEN", errorMessage);
+          this.setState({ errorOccured: true });
+        }
+
+        this.setState({ errorMessage: error.toString(), errorOccured: true });
+      });
   }
 
   async getCategories() {
-    CategoryService.getCategories().then((response) => {
-      const categories = response.data;
-      //Getting ALL categories for labels
-      this.convertCategoriesIntoLabels(categories);
-    });
+    CategoryService.getCategories()
+      .then((response) => {
+        const categories = response.data;
+        //Getting ALL categories for labels
+        this.convertCategoriesIntoLabels(categories);
+      })
+      .catch((error) => {
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          console.error("FORBIDDEN", errorMessage);
+          this.setState({ errorOccured: true });
+        }
+
+        this.setState({ errorMessage: error.toString(), errorOccured: true });
+      });
   }
 
   generateCharts(expenses) {
@@ -265,6 +288,13 @@ class Analysis extends Component {
     let rangeErrorMessage = this.state.rangeErrorMessage;
     let startDate = this.state.startDate;
     let endDate = this.state.endDate;
+
+    if (this.state.errorOccured)
+      return (
+        <Switch>
+          <Redirect to="/forbidden"></Redirect>
+        </Switch>
+      );
 
     //Data
     const dataExpensesPerCat = (canvas) => {

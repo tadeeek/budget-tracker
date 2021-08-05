@@ -4,6 +4,7 @@ import Category from "./components/Category";
 import Expenses from "./components/Expenses";
 import Analysis from "./components/Analysis";
 import NotFound from "./components/NotFound";
+import Forbidden from "./components/Forbidden";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Home from "./components/Home";
 import NavApp from "./components/NavApp";
@@ -73,6 +74,7 @@ class App extends Component {
             <Route path="/expenses" exact={true} component={Expenses} />
             <Route path="/analysis" exact={true} component={Analysis} />
             <Route path="/account" exact={true} component={Account} />
+            <Route path="/forbidden" exact={true} component={Forbidden} />
             <Route component={NotFound} />
           </Switch>
         </React.Fragment>

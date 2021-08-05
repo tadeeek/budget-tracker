@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 
-class NotFound extends Component {
+class Forbidden extends Component {
   render() {
     return (
       <div className="min-vh-100">
         <div className="container">
           <div className="d-flex flex-column min-vh-100 justify-content-center align-items-center">
-            <h1>Lost your way?</h1>
-            <p className="text-muted">ERROR 404</p>
-            <p>Sorry, the page you are looking for can not be found</p>
+            <h1>Can't let you in!</h1>{" "}
+            <p className="text-muted">FORBIDDEN 403</p>
+            <p>Sorry, access to this resource on the server is denied</p>
           </div>
         </div>
       </div>
@@ -16,4 +16,4 @@ class NotFound extends Component {
   }
 }
 
-export default NotFound;
+export default Forbidden;

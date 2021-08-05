@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import DatePicker from "react-datepicker";
 import Moment from "react-moment";
 import "react-datepicker/dist/react-datepicker.css";
-import Loader from "./Loader";
+import { Switch, Redirect } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ExpensesService from "../services/ExpensesService";
 import CategoryService from "../services/CategoryService";
@@ -25,13 +25,13 @@ class Expenses extends Component {
     super(props);
 
     this.state = {
-      isLoading: true,
       expenses: [],
       categories: [],
       date: this.currentDate,
       expenseItem: this.initialExpenseItem,
       showModal: false,
       formMethod: "POST",
+      errorOcured: false,
       errorMessage: "",
       errorMessageDescription: "",
       errorMessageLocation: "",
@@ -53,32 +53,52 @@ class Expenses extends Component {
   }
 
   async getExpenses() {
-    ExpensesService.getExpenses().then((response) => {
-      let expenses = response.data;
-      this.setState({ expenses: expenses, isLoading: false });
-    });
+    ExpensesService.getExpenses()
+      .then((response) => {
+        let expenses = response.data;
+        this.setState({ expenses: expenses, isLoading: false });
+      })
+      .catch((error) => {
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          console.error("FORBIDDEN", errorMessage);
+          this.setState({ errorOccured: true });
+        }
+
+        this.setState({ errorMessage: error.toString(), errorOccured: true });
+      });
   }
 
   async getCategories() {
-    CategoryService.getCategories().then((response) => {
-      const categories = response.data;
+    CategoryService.getCategories()
+      .then((response) => {
+        const categories = response.data;
 
-      //Set first category as first value for form
-      if (categories.length > 0) {
-        this.setState((tempState) => ({
-          ...tempState,
-          expenseItem: {
-            ...tempState.expenseItem,
-            category: {
-              ...tempState.expenseItem.categories,
-              id: categories[0].id,
+        //Set first category as first value for form
+        if (categories.length > 0) {
+          this.setState((tempState) => ({
+            ...tempState,
+            expenseItem: {
+              ...tempState.expenseItem,
+              category: {
+                ...tempState.expenseItem.categories,
+                id: categories[0].id,
+              },
             },
-          },
-        }));
-      }
+          }));
+        }
 
-      this.setState({ categories: categories, isLoading: false });
-    });
+        this.setState({ categories: categories, isLoading: false });
+      })
+      .catch((error) => {
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          console.error("FORBIDDEN", errorMessage);
+          this.setState({ errorOccured: true });
+        }
+
+        this.setState({ errorMessage: error.toString(), errorOccured: true });
+      });
   }
   async handleSubmit(event, method) {
     event.preventDefault();
@@ -254,11 +274,14 @@ class Expenses extends Component {
   render() {
     const title = <h2>Expenses</h2>;
     const { categories } = this.state;
-    const { expenses, isLoading, showModal, formMethod } = this.state;
+    const { expenses, showModal, formMethod } = this.state;
 
-    if (isLoading) {
-      return <Loader />;
-    }
+    if (this.state.errorOccured)
+      return (
+        <Switch>
+          <Redirect to="/forbidden"></Redirect>
+        </Switch>
+      );
 
     let categoriesList = categories.map((cat) => (
       <option value={cat.id} key={cat.id}>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import Loader from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Switch, Redirect } from "react-router-dom";
 import CategoryService from "../services/CategoryService";
 
 class Category extends Component {
@@ -13,13 +13,13 @@ class Category extends Component {
     super(props);
 
     this.state = {
-      isLoading: true,
       categories: [],
       categoryItem: this.initialCategoryItem,
       categoryId: 0,
       showModal: false,
       showModalDelete: false,
       formMethod: "PUT",
+      errorOccured: false,
       errorMessage: "",
       errorMessageCategoryName: "",
     };
@@ -36,10 +36,20 @@ class Category extends Component {
   }
 
   async getCategories() {
-    CategoryService.getCategories().then((response) => {
-      const body = response.data;
-      this.setState({ categories: body, isLoading: false });
-    });
+    CategoryService.getCategories()
+      .then((response) => {
+        const body = response.data;
+        this.setState({ categories: body });
+      })
+      .catch((error) => {
+        if (error.response) {
+          const errorMessage = error.response.data.message;
+          console.error("FORBIDDEN", errorMessage);
+          this.setState({ errorOccured: true });
+        }
+
+        this.setState({ errorMessage: error.toString(), errorOccured: true });
+      });
   }
 
   async handleSubmit(event, method) {
@@ -182,10 +192,14 @@ class Category extends Component {
 
   render() {
     const title = <h2>Categories</h2>;
-    const { categories, isLoading, showModal, formMethod, showModalDelete } =
-      this.state;
+    const { categories, showModal, formMethod, showModalDelete } = this.state;
 
-    if (isLoading) return <Loader />;
+    if (this.state.errorOccured)
+      return (
+        <Switch>
+          <Redirect to="/forbidden"></Redirect>
+        </Switch>
+      );
 
     let categoriesList = categories.map((category) => (
       <tr key={category.id}>
