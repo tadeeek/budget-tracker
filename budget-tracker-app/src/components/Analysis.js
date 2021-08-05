@@ -295,7 +295,16 @@ class Analysis extends Component {
           <Redirect to="/forbidden"></Redirect>
         </Switch>
       );
-
+    else if (this.state.expenses.length === 0) {
+      return (
+        <div className="container pt-appnav pb-5">
+          {title}
+          <div className="text-center pb-3 ">
+            <h5>No data to display, please add expenses</h5>
+          </div>
+        </div>
+      );
+    }
     //Data
     const dataExpensesPerCat = (canvas) => {
       const ctx = canvas.getContext("2d");
