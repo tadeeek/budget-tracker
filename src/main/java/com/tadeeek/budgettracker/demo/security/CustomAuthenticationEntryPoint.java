@@ -26,7 +26,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         String error = "Wrong username or password.";
 
-        String message = new ApiError(ZonedDateTime.now(), badRequest, error).toJson();
+        String message = new ApiError(ZonedDateTime.now(), error).toJson();
 
         response.setStatus(FORBIDDEN.value());
         response.setContentType(APPLICATION_JSON_VALUE);

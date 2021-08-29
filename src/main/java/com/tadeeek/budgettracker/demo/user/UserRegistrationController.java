@@ -2,6 +2,8 @@ package com.tadeeek.budgettracker.demo.user;
 
 import javax.validation.Valid;
 
+import com.tadeeek.budgettracker.demo.exception.UserExistsException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +19,8 @@ public class UserRegistrationController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public User registerUser(@Valid @RequestBody User user) {
+    @PostMapping("/registration")
+    public User registerUser(@Valid @RequestBody User user) throws UserExistsException {
 
         return userService.saveUser(user);
 

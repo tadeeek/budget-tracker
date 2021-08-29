@@ -3,6 +3,7 @@ import Account from "./components/Account";
 import Category from "./components/Category";
 import Expenses from "./components/Expenses";
 import Analysis from "./components/Analysis";
+import Register from "./components/Register";
 import NotFound from "./components/NotFound";
 import Forbidden from "./components/Forbidden";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -74,6 +75,7 @@ class App extends Component {
             <Route path="/expenses" exact={true} component={Expenses} />
             <Route path="/analysis" exact={true} component={Analysis} />
             <Route path="/account" exact={true} component={Account} />
+            <Route path="/register" exact={true} component={Register} />
             <Route path="/forbidden" exact={true} component={Forbidden} />
             <Route component={NotFound} />
           </Switch>

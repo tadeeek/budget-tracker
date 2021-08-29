@@ -76,14 +76,14 @@ class NavApp extends Component {
               ) : (
                 <>
                   <li className="nav-item">
-                    <a className="nav-link" href="/" onClick={this.logout}>
+                    <a className="nav-link" href="/">
                       Login
                     </a>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="/" onClick={this.logout}>
+                    <NavLink to="/register" className="nav-link">
                       Register
-                    </a>
+                    </NavLink>
                   </li>
                 </>
               )}

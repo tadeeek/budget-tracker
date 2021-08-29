@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.lang.Nullable;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,18 +16,49 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.util.WebUtils;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(value = { ApiRequestException.class })
-    public ResponseEntity<Object> handleApiRequestException(ApiRequestException ex) {
+    // Exception handler for all types
+    @ExceptionHandler({ UserExistsException.class, ApiRequestException.class })
+    public ResponseEntity<Object> handleApiRequestException(Exception ex, WebRequest request) {
+        HttpStatus status;
 
-        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        HttpHeaders headers = new HttpHeaders();
 
-        ApiError apiException = new ApiError(ZonedDateTime.now(), badRequest, ex.getMessage());
+        if (ex instanceof ApiRequestException) {
+            status = HttpStatus.BAD_REQUEST;
+            ApiRequestException exep = (ApiRequestException) ex;
 
-        return new ResponseEntity<>(apiException, badRequest);
+            return new ResponseEntity<>(exep, status);
+
+        } else if (ex instanceof MethodArgumentNotValidException) {
+            // Find way to delegate here methodargumentnotvalidexception and handle it here
+            status = HttpStatus.BAD_REQUEST;
+            MethodArgumentNotValidException exep = (MethodArgumentNotValidException) ex;
+            return handleMethodArgumentNotValid(exep, headers, status, request);
+        }
+
+        else if (ex instanceof UserExistsException) {
+            status = HttpStatus.BAD_REQUEST;
+            UserExistsException exep = (UserExistsException) ex;
+            return handleUserExistsException(exep, status, request);
+
+        } else {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+            Exception exep = new Exception();
+            return handleExceptionInternal(exep, null, status, request);
+        }
+    }
+
+    protected ResponseEntity<Object> handleUserExistsException(UserExistsException ex, HttpStatus status,
+            WebRequest request) {
+
+        ApiError apiError = new ApiError(ZonedDateTime.now(), ex.getMessage());
+
+        return handleExceptionInternal(ex, apiError, status, request);
     }
 
     // Form validation error
@@ -44,12 +76,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
             details.add(new ApiErrorDetails(error.getObjectName(), error.getDefaultMessage()));
         }
-        ApiError apiException = new ApiError(ZonedDateTime.now(), badRequest, ex.getMessage(), details);
+        ApiError apiException = new ApiError(ZonedDateTime.now(), ex.getMessage(), details);
 
         return new ResponseEntity(apiException, badRequest);
     }
 
-    // Invalid data format
+    // Invalid data format - handle this
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -57,21 +89,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
         String error = "Invalid JSON data format";
 
-        ApiError apiException = new ApiError(ZonedDateTime.now(), badRequest, error);
+        ApiError apiException = new ApiError(ZonedDateTime.now(), error);
 
         return new ResponseEntity(apiException, badRequest);
     }
 
-    // }
-
-    // @ExceptionHandler(ResourceNotFoundException.class)
-    // public ResponseEntity<?> resourceNotFoundException(ResourceNotFoundException
-    // ex, WebRequest request) {
-
-    // ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND);
-    // errorResponse.setMessage(ex.getMessage());
-
-    // return createResponseEntity(errorResponse);
-    // }
+    protected ResponseEntity<Object> handleExceptionInternal(Exception ex, @Nullable ApiError body, HttpStatus status,
+            WebRequest request) {
+        if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
+            request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
+        }
+        return new ResponseEntity<>(body, status);
+    }
 
 }

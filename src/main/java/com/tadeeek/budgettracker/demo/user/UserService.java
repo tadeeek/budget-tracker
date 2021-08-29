@@ -9,6 +9,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
+import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
+import com.tadeeek.budgettracker.demo.exception.UserExistsException;
+
 @Service
 public class UserService {
 
@@ -43,15 +46,19 @@ public class UserService {
                 .filter(it -> it.getUserId().equals(userId)).collect(Collectors.toList()).get(0);
 
         return user;
-
     }
 
-    public User saveUser(final User user) {
+    public User saveUser(final User user) throws UserExistsException {
+        List<User> users = userRepository.findAll().stream().filter(it -> user.getUserName().equals(it.getUserName()))
+                .collect(Collectors.toList());
 
-        // check if user exists, if yes throw error if not, populate user
-        User userModel = populateUser(user);
+        if (users.size() >= 1) {
+            throw new UserExistsException(user.getUserName());
+        } else {
+            User userModel = populateUser(user);
 
-        return userRepository.save(userModel);
+            return userRepository.save(userModel);
+        }
 
     }
 
