@@ -22,8 +22,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
             throws IOException, ServletException {
 
-        HttpStatus badRequest = HttpStatus.FORBIDDEN;
-
         String error = "Wrong username or password.";
 
         String message = new ApiError(ZonedDateTime.now(), error).toJson();

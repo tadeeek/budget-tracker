@@ -8,6 +8,7 @@ const Register = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessageUserName, setErrorMessageUserName] = useState("");
   const [errorMessageEmail, setErrorMessageEmail] = useState("");
   const [errorMessagePassword, setErrorMessagePassword] = useState("");
 
@@ -20,19 +21,28 @@ const Register = (props) => {
       .catch((error) => {
         if (error.response) {
           const errorMessage = error.response.data.message;
-          const errorDetails = error.response.data.details;
-          for (let i = 0; i < errorDetails.length; i++) {
-            console.log(errorDetails[i]);
-            switch (errorDetails[i].object) {
-              case "password":
-                setErrorMessagePassword(errorDetails[i].message);
-                break;
-              case "email":
-                setErrorMessageEmail(errorDetails[i].message);
-                break;
 
-              default:
+          if (error.response.data.details !== null) {
+            const errorDetails = error.response.data.details;
+            for (let i = 0; i < errorDetails.length; i++) {
+              console.log(errorDetails[i]);
+              switch (errorDetails[i].object) {
+                case "password":
+                  setErrorMessagePassword(errorDetails[i].message);
+                  break;
+                case "email":
+                  setErrorMessageEmail(errorDetails[i].message);
+                  break;
+                case "userName":
+                  setErrorMessageUserName(errorDetails[i].message);
+                  break;
+
+                default:
+              }
             }
+          } else {
+            const errorMessage = error.response.data.message;
+            setErrorMessageUserName(errorMessage);
           }
 
           return Promise.reject(errorMessage);
@@ -54,6 +64,10 @@ const Register = (props) => {
                 <label htmlFor="inputUserName" className="m-2">
                   Username:
                 </label>
+                <span className="text-danger fw-bold">
+                  {errorMessageUserName}
+                </span>
+
                 <input
                   type="text"
                   id="inputUserName"

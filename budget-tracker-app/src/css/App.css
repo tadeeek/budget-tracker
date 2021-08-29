@@ -11,6 +11,16 @@ html {
   max-width: 1024px;
 }
 
+/* Links */
+a {
+  color: #999999;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #56dad1;
+}
+
 /* Home */
 .home-bg {
   background: url(../img/home-bg.jpg) no-repeat center center fixed;
