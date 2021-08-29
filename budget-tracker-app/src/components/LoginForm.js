@@ -58,11 +58,12 @@ const LoginForm = (props) => {
           />
           <span className="text-danger fw-bold">{errorMessage}</span>
 
+          {/* To implement later
           <div className="checkbox mb-3">
             <label>
               <input type="checkbox" value="remember-me" /> Remember me
             </label>
-          </div>
+          </div> */}
           <button
             className="w-100 btn btn-lg btn-primary"
             type="submit"

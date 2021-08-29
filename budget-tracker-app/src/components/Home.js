@@ -12,7 +12,6 @@ class Home extends Component {
             <p>
               My first simple: JAVA, Spring, React and Boostrap application.
             </p>
-            {console.log(JSON.parse(localStorage.getItem("dataToken")))}
             {this.props.isLoggedInStatus ? (
               "You are logged in. "
             ) : (

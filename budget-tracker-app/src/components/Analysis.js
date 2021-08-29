@@ -36,6 +36,7 @@ class Analysis extends Component {
 
   async componentDidMount() {
     this.getCategories();
+
     this.getExpenses();
   }
 
@@ -45,7 +46,6 @@ class Analysis extends Component {
     ExpensesService.getExpenses()
       .then((response) => {
         let expenses = response.data;
-        console.log(expenses);
         expenses = this.sortExpensesByDate(expenses);
         this.setState({ expenses: expenses });
         this.resetRange(expenses);
@@ -57,8 +57,8 @@ class Analysis extends Component {
           console.error("FORBIDDEN", errorMessage);
           this.setState({ errorOccured: true });
         }
-
-        this.setState({ errorMessage: error.toString(), errorOccured: true });
+        console.log("here");
+        this.setState({ errorMessage: error.toString() });
       });
   }
 
@@ -72,11 +72,13 @@ class Analysis extends Component {
       .catch((error) => {
         if (error.response) {
           const errorMessage = error.response.data.message;
+          console.log("here");
+
           console.error("FORBIDDEN", errorMessage);
           this.setState({ errorOccured: true });
         }
 
-        this.setState({ errorMessage: error.toString(), errorOccured: true });
+        this.setState({ errorMessage: error.toString() });
       });
   }
 
@@ -151,8 +153,6 @@ class Analysis extends Component {
   }
 
   filterExpensesByDate(expenses, startDate, endDate) {
-    console.log(startDate);
-    console.log(endDate);
     return expenses.filter((exp) => {
       let date = new Date(exp.expenseDate).getTime();
       return date >= startDate && date <= endDate;
@@ -166,30 +166,19 @@ class Analysis extends Component {
   }
 
   //Generating data for charts
-
   generateExpensesPerMonth(expenses) {
     const expenseMonthsArr = expenses.map((val) => {
       let date = new Date(val.expenseDate);
       return date.getMonth();
     });
     const expensePriceArr = expenses.map((val) => val.price);
-
-    //month to index, powstawiaj po prostu odpowiednie price w odpowiednie indexy ktore sa monthami i gotowe :)
-    console.log("expense");
-    console.log(expenses);
-    console.log("miesiace");
-    console.log(expenseMonthsArr);
-    console.log("ceny");
-    console.log(expensePriceArr);
     const dataSetPriceArr = new Array(12).fill(0);
     for (let i = 0; i < expenses.length; i++) {
       let index = expenseMonthsArr[i];
 
-      // dataSetPriceArr[index] = expensePriceArr[i];
       let sum = dataSetPriceArr[index] + expensePriceArr[i];
       dataSetPriceArr[index] = sum;
     }
-    console.log(dataSetPriceArr);
     this.setState({ dataSetExpensesPerMonth: dataSetPriceArr });
   }
 
@@ -214,7 +203,6 @@ class Analysis extends Component {
         dataSetPriceArr[index] = sum;
       }
     }
-
     this.setState({ dataSetExpensesPerCat: dataSetPriceArr });
   }
 
@@ -235,8 +223,8 @@ class Analysis extends Component {
     }
 
     this.setState({ labelsExpensesByLocation: dataSetLocationArr }, () => {
-      //generate rainbow here
-      // Dont let one item destroy ranbow, set constant color for one displayed item
+      // Generate Rainbow
+      // Don't let one item destroy ranbow, set constant color for one displayed item
       if (dataSetLocationArr.length <= 1) {
         this.setState({
           gradientRainbow: "#483d7b",
