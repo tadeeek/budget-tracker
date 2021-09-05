@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tadeeek.budgettracker.demo.category.Category;
-import com.tadeeek.budgettracker.demo.user.User;
+import com.tadeeek.budgettracker.demo.user.MyUser;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -50,6 +50,6 @@ public class Expense {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private User user;
+    private MyUser user;
 
 }

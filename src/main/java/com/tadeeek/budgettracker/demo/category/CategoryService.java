@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
 import com.tadeeek.budgettracker.demo.user.MyUserDetails;
-import com.tadeeek.budgettracker.demo.user.User;
+import com.tadeeek.budgettracker.demo.user.MyUser;
 import com.tadeeek.budgettracker.demo.user.UserCategoryDTO;
 import com.tadeeek.budgettracker.demo.user.UserRepository;
 
@@ -30,7 +30,7 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-    private UserCategoryDTO convertToUserCategoryDTO(User user) {
+    private UserCategoryDTO convertToUserCategoryDTO(MyUser user) {
         // Mapping fields
         UserCategoryDTO userCategoryDTO = new UserCategoryDTO();
         userCategoryDTO.setUserId(user.getUserId());
@@ -45,8 +45,9 @@ public class CategoryService {
         long userId = myUserDetails.getUserId();
 
         // get first and only user
-        List<Category> categories = ((List<User>) userRepository.findAll()).stream().map(this::convertToUserCategoryDTO)
-                .filter(it -> it.getUserId().equals(userId)).collect(Collectors.toList()).get(0).getCategories();
+        List<Category> categories = ((List<MyUser>) userRepository.findAll()).stream()
+                .map(this::convertToUserCategoryDTO).filter(it -> it.getUserId().equals(userId))
+                .collect(Collectors.toList()).get(0).getCategories();
 
         return categories;
     }
@@ -68,7 +69,7 @@ public class CategoryService {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         long userId = myUserDetails.getUserId();
 
-        User user = new User();
+        MyUser user = new MyUser();
         user.setUserId(userId);
 
         category.setUser(user);

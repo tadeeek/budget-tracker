@@ -16,7 +16,7 @@ public class MyUserDetails implements UserDetails {
     private String password;
     private List<GrantedAuthority> authorities;
 
-    public MyUserDetails(User user) {
+    public MyUserDetails(MyUser user) {
         this.userId = user.getUserId();
         this.userName = user.getUserName();
         this.password = user.getPassword();

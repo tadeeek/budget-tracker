@@ -1,8 +1,10 @@
 import React from "react";
 import { useState } from "react";
 import RegisterService from "../services/RegisterService";
+import { useHistory } from "react-router-dom";
 
 const Register = (props) => {
+  const history = useHistory();
   const [userName, setUserName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -16,7 +18,8 @@ const Register = (props) => {
     event.preventDefault();
     RegisterService.registerUser(userName, name, email, password)
       .then(() => {
-        console.log("OK");
+        console.log("Registration OK");
+        history.push("/register/thankyou");
       })
       .catch((error) => {
         if (error.response) {

@@ -27,7 +27,7 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    private UserDTO convertToUserDTO(User user) {
+    private UserDTO convertToUserDTO(MyUser user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setUserId(user.getUserId());
         userDTO.setEmail(user.getEmail());
@@ -42,28 +42,28 @@ public class UserService {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         long userId = myUserDetails.getUserId();
 
-        UserDTO user = ((List<User>) userRepository.findAll()).stream().map(this::convertToUserDTO)
+        UserDTO user = ((List<MyUser>) userRepository.findAll()).stream().map(this::convertToUserDTO)
                 .filter(it -> it.getUserId().equals(userId)).collect(Collectors.toList()).get(0);
 
         return user;
     }
 
-    public User saveUser(final User user) throws UserExistsException {
-        List<User> users = userRepository.findAll().stream().filter(it -> user.getUserName().equals(it.getUserName()))
+    public MyUser saveUser(final MyUser user) throws UserExistsException {
+        List<MyUser> users = userRepository.findAll().stream().filter(it -> user.getUserName().equals(it.getUserName()))
                 .collect(Collectors.toList());
 
         if (users.size() >= 1) {
             throw new UserExistsException(user.getUserName());
         } else {
-            User userModel = populateUser(user);
+            MyUser userModel = populateUser(user);
 
             return userRepository.save(userModel);
         }
 
     }
 
-    private User populateUser(final User user) {
-        User userModel = new User();
+    private MyUser populateUser(final MyUser user) {
+        MyUser userModel = new MyUser();
 
         userModel.setName(user.getName());
         userModel.setUserName(user.getUserName());

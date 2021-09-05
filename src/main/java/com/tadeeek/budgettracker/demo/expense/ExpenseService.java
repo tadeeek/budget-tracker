@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.tadeeek.budgettracker.demo.exception.ApiRequestException;
 import com.tadeeek.budgettracker.demo.user.MyUserDetails;
-import com.tadeeek.budgettracker.demo.user.User;
+import com.tadeeek.budgettracker.demo.user.MyUser;
 import com.tadeeek.budgettracker.demo.user.UserExpenseDTO;
 import com.tadeeek.budgettracker.demo.user.UserRepository;
 
@@ -30,7 +30,7 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    private UserExpenseDTO convertToUserExpenseDTO(User user) {
+    private UserExpenseDTO convertToUserExpenseDTO(MyUser user) {
         // Mapping fields
         UserExpenseDTO userExpenseDTO = new UserExpenseDTO();
         userExpenseDTO.setUserId(user.getUserId());
@@ -45,7 +45,7 @@ public class ExpenseService {
         long userId = myUserDetails.getUserId();
 
         // get first and only user
-        List<Expense> expenses = ((List<User>) userRepository.findAll()).stream().map(this::convertToUserExpenseDTO)
+        List<Expense> expenses = ((List<MyUser>) userRepository.findAll()).stream().map(this::convertToUserExpenseDTO)
                 .filter(it -> it.getUserId().equals(userId)).collect(Collectors.toList()).get(0).getExpenses();
 
         return expenses;
@@ -68,7 +68,7 @@ public class ExpenseService {
         MyUserDetails myUserDetails = (MyUserDetails) authentication.getPrincipal();
         long userId = myUserDetails.getUserId();
 
-        User user = new User();
+        MyUser user = new MyUser();
         user.setUserId(userId);
 
         expense.setUser(user);

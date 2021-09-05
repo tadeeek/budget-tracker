@@ -20,7 +20,7 @@ public class UserRegistrationController {
     }
 
     @PostMapping("/registration")
-    public User registerUser(@Valid @RequestBody User user) throws UserExistsException {
+    public MyUser registerUser(@Valid @RequestBody MyUser user) throws UserExistsException {
 
         return userService.saveUser(user);
 

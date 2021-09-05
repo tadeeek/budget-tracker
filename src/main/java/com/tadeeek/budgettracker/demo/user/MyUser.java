@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
@@ -25,21 +24,25 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class MyUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
+
     @NotEmpty(message = "Username should not be empty")
     @Size(max = 16, message = "Username is too long. Should have maximum 16 characters")
     private String userName;
 
     private String name;
+
     @NotEmpty(message = "E-mail should not be empty")
     @Email(message = "Invalid e-email format")
     private String email;
+
     @NotEmpty(message = "Password should not be empty")
     private String password;
+
     private String roles;
 
     @OneToMany(cascade = CascadeType.ALL)
