@@ -9,7 +9,10 @@ const LoginForm = (props) => {
 
   const validateUser = (event) => {
     event.preventDefault();
-    AuthorizationService.authenticateUser(username, password).then(
+    AuthorizationService.authenticateUser(
+      username.toLowerCase(),
+      password
+    ).then(
       () => {
         props.isLoggedIn(true);
       },

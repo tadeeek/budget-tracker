@@ -35,3 +35,4 @@ build/
 ### Other ###
 .eslintcache
 
+src/main/resources/appprop2

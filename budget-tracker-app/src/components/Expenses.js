@@ -102,7 +102,6 @@ class Expenses extends Component {
   }
   async handleSubmit(event, method) {
     event.preventDefault();
-    this.clearFieldsAndErrors();
     const expenseItem = this.state.expenseItem;
 
     //Refactor code to avoid code duplication
