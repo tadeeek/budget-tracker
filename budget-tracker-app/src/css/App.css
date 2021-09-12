@@ -81,6 +81,9 @@ a:hover {
 .table-align-center {
   text-align: center;
 }
+.bc-custom {
+  border-color: #dee2e6 !important;
+}
 
 /* Buttons */
 .btn {

@@ -288,58 +288,69 @@ class Expenses extends Component {
       </option>
     ));
 
-    // let expensesTotal = expenses.reduce(function (acc, obj) {
-    //   return acc + obj.price;
-    // }, 0);
+    let expensesTotal = expenses.reduce(function (acc, obj) {
+      return acc + obj.price;
+    }, 0);
 
-    let expensesList = expenses
-      .sort(function (a, b) {
-        let dateA = new Date(a.expenseDate);
-        let dateB = new Date(b.expenseDate);
-        return dateA - dateB;
-      })
-      .map((exp) => (
-        <tr key={exp.id}>
-          <td>
-            <Moment date={exp.expenseDate} format="YYYY/MM/DD" />
-          </td>
-          <td>{exp.description}</td>
-          <td>{exp.location}</td>
-          <td>{exp.category.name}</td>
-          <td className="table-align-right">
-            {(Math.round(exp.price * 100) / 100).toFixed(2)}
-          </td>
-          <td className="table-align-center">
-            <button
-              type="button"
-              className="btn btn-outline-danger btn-sm"
-              onClick={() => this.remove(exp.id)}
-              title="Delete expense"
-            >
-              <FontAwesomeIcon icon="times" />
-            </button>{" "}
-            <button
-              type="button"
-              className="btn btn-outline-secondary btn-sm"
-              onClick={() => {
-                this.changeFormMethod("PUT");
-                this.passExpense(
-                  exp.id,
-                  exp.expenseDate,
-                  exp.description,
-                  exp.location,
-                  exp.category.id,
-                  exp.price
-                );
-                this.openModal();
-              }}
-              title="Edit expense"
-            >
-              <FontAwesomeIcon icon="edit" />
-            </button>
+    let expensesList;
+    if (expenses.length > 0) {
+      expensesList = expenses
+        .sort(function (a, b) {
+          let dateA = new Date(a.expenseDate);
+          let dateB = new Date(b.expenseDate);
+          return dateA - dateB;
+        })
+        .map((exp) => (
+          <tr key={exp.id}>
+            <td>
+              <Moment date={exp.expenseDate} format="YYYY/MM/DD" />
+            </td>
+            <td>{exp.description}</td>
+            <td>{exp.location}</td>
+            <td>{exp.category.name}</td>
+            <td className="table-align-right">
+              {(Math.round(exp.price * 100) / 100).toFixed(2)}
+            </td>
+            <td className="table-align-center">
+              <button
+                type="button"
+                className="btn btn-outline-danger btn-sm"
+                onClick={() => this.remove(exp.id)}
+                title="Delete expense"
+              >
+                <FontAwesomeIcon icon="times" />
+              </button>{" "}
+              <button
+                type="button"
+                className="btn btn-outline-secondary btn-sm"
+                onClick={() => {
+                  this.changeFormMethod("PUT");
+                  this.passExpense(
+                    exp.id,
+                    exp.expenseDate,
+                    exp.description,
+                    exp.location,
+                    exp.category.id,
+                    exp.price
+                  );
+                  this.openModal();
+                }}
+                title="Edit expense"
+              >
+                <FontAwesomeIcon icon="edit" />
+              </button>
+            </td>
+          </tr>
+        ));
+    } else {
+      expensesList = (
+        <tr>
+          <td colspan="6" className="bc-custom">
+            No data to display, please add expenses
           </td>
         </tr>
-      ));
+      );
+    }
 
     return (
       <div className="container pt-appnav">
@@ -524,7 +535,7 @@ class Expenses extends Component {
               </td>
               <td className="table-align-right">
                 <span className="fw-bold">
-                  {/* {(Math.round(expensesTotal * 100) / 100).toFixed(2)} */}
+                  {(Math.round(expensesTotal * 100) / 100).toFixed(2)}
                 </span>
               </td>
               <td></td>

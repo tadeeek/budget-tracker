@@ -201,37 +201,46 @@ class Category extends Component {
         </Switch>
       );
 
-    let categoriesList = categories.map((category) => (
-      <tr key={category.id}>
-        <td>{category.name}</td>
-        <td className="table-align-center">
-          <button
-            type="button"
-            className="btn btn-outline-danger btn-sm"
-            onClick={() => {
-              this.openModal();
-              this.setState({ showModalDelete: true });
-              this.setState({ categoryId: category.id });
-            }}
-            title="Delete category"
-          >
-            <FontAwesomeIcon icon="times" />
-          </button>{" "}
-          <button
-            type="button"
-            className="btn btn-outline-secondary btn-sm"
-            onClick={() => {
-              this.changeFormMethod("PUT");
-              this.passCategory(category.id, category.name);
-              this.openModal();
-            }}
-            title="Edit category"
-          >
-            <FontAwesomeIcon icon="edit" />
-          </button>
-        </td>
-      </tr>
-    ));
+    let categoriesList;
+    if (categories.length > 0) {
+      categoriesList = categories.map((category) => (
+        <tr key={category.id}>
+          <td>{category.name}</td>
+          <td className="table-align-center">
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm"
+              onClick={() => {
+                this.openModal();
+                this.setState({ showModalDelete: true });
+                this.setState({ categoryId: category.id });
+              }}
+              title="Delete category"
+            >
+              <FontAwesomeIcon icon="times" />
+            </button>{" "}
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm"
+              onClick={() => {
+                this.changeFormMethod("PUT");
+                this.passCategory(category.id, category.name);
+                this.openModal();
+              }}
+              title="Edit category"
+            >
+              <FontAwesomeIcon icon="edit" />
+            </button>
+          </td>
+        </tr>
+      ));
+    } else {
+      categoriesList = (
+        <tr>
+          <td colspan="2">No data to display, please add categories</td>
+        </tr>
+      );
+    }
 
     return (
       <div className="container pt-appnav">
