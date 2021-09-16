@@ -36,4 +36,3 @@ build/
 .eslintcache
 
 src/main/resources/appprop2
-src/main/resources/application.properties
