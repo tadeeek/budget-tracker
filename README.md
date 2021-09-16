@@ -13,7 +13,7 @@ Simple web application that lets you track your expenses. Manage them by creatin
 
 Demo is available at: https://budget-tracker-tadeeek-front.herokuapp.com/
 Register new user or login to existing: username/creativepass123.
-Please wait when login, heroku is sometimes slow.
+Please be patient while logging in, heroku is sometimes slow.
 
 React fronted is located at /budget-tracker-app/
 
