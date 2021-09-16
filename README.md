@@ -15,6 +15,8 @@ Demo is available at: https://budget-tracker-tadeeek-front.herokuapp.com/
 Register new user or login to existing: username/creativepass123.
 Please wait when login, heroku is sometimes slow.
 
+React fronted is located at /budget-tracker-app/
+
 ## Screencast
 
 ![Budget tracker screencast](screencast-budget-tracker.gif)
